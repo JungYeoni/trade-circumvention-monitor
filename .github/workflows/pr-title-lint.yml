@@ -1,0 +1,23 @@
+name: PR Title Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  lint-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR 제목 접두사 확인
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          ALLOWED_PREFIXES="\[Experiment\]|\[Feature\]|\[Fix\]|\[Docs\]|\[Refactor\]|\[Chore\]"
+          if echo "$PR_TITLE" | grep -qE "^($ALLOWED_PREFIXES)"; then
+            echo "PR 제목 형식 OK: $PR_TITLE"
+          else
+            echo "PR 제목은 다음 접두사 중 하나로 시작해야 합니다:"
+            echo "  [Experiment], [Feature], [Fix], [Docs], [Refactor], [Chore]"
+            echo "현재 제목: $PR_TITLE"
+            exit 1
+          fi

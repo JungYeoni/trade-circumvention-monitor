@@ -1,0 +1,53 @@
+name: "버그 리포트"
+description: "분석 코드 또는 파이프라인에서 발생한 오류를 보고합니다."
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: "요약"
+      placeholder: "한 줄로 문제를 설명해 주세요"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "재현 절차"
+      description: "버그를 재현하기 위한 최소 단계"
+      placeholder: |
+        1. `python src/features/build_features.py` 실행
+        2. 데이터로 `data/raw/sample.csv` 사용
+        3. 오류 발생
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "기대 동작"
+      placeholder: "어떤 결과가 나와야 했는지"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "실제 동작"
+      description: "에러 메시지나 스택 트레이스를 포함해 주세요"
+      placeholder: "실제로 발생한 동작 또는 오류"
+    validations:
+      required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: "커밋 / 브랜치"
+      placeholder: "예: main@abc1234 또는 feature/timeseries"
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "추가 컨텍스트"
+      placeholder: "OS, Python 버전, 관련 데이터 특성 등"

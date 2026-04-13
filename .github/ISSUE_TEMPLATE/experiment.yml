@@ -1,0 +1,76 @@
+name: "실험 계획"
+description: "새 분석 실험을 계획하고 문서화합니다."
+title: "[Experiment] "
+labels: ["experiment"]
+body:
+  - type: markdown
+    attributes:
+      value: "## 실험 계획서"
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: "분석 목표"
+      description: "이 실험으로 답하려는 질문 또는 달성하려는 목표"
+      placeholder: "예: X 요인이 Y에 미치는 영향을 정량화한다"
+    validations:
+      required: true
+
+  - type: textarea
+    id: dataset
+    attributes:
+      label: "데이터셋"
+      description: "사용할 데이터 소스, 버전, 기간"
+      placeholder: "예: 내부 거래 DB, 2023-01-01 ~ 2024-12-31"
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: "타깃 변수"
+      placeholder: "예: churn (이진), revenue (연속형)"
+    validations:
+      required: true
+
+  - type: input
+    id: scope
+    attributes:
+      label: "분석 기간 / 범위"
+      placeholder: "예: 2023년 Q3~Q4, 수도권 데이터"
+
+  - type: textarea
+    id: split_strategy
+    attributes:
+      label: "분할 전략"
+      description: "train/validation/test 분리 기준"
+      placeholder: "예: 시간 기준 분할 (train: ~2023-09, val: 2023-10~11, test: 2023-12)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: eval_plan
+    attributes:
+      label: "평가 계획"
+      description: "사용할 지표, CV fold 수, 성공 기준"
+      placeholder: "예: F1-macro (5-Fold CV), 기준선 대비 +5% 이상"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: risks
+    attributes:
+      label: "주요 리스크"
+      options:
+        - label: "데이터 누수 가능성"
+        - label: "결측치 비율 높음"
+        - label: "클래스 불균형"
+        - label: "교란변수 통제 어려움"
+        - label: "데이터 드리프트"
+        - label: "외적 타당도 제한"
+
+  - type: textarea
+    id: assumptions
+    attributes:
+      label: "핵심 가정 및 제약"
+      placeholder: "예: 데이터가 MCAR(완전임의 결측)이라고 가정, 2023년 데이터로만 일반화"
