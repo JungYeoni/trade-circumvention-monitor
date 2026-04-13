@@ -15,6 +15,7 @@
 
 ### 문서
 
+- CHANGELOG 자동 업데이트 [skip ci] ([a0bcbc9](https://github.com/JungYeoni/da-template/commit/a0bcbc9bf937b5ba210df685ecbd7ef6e0624e05))
 - README 프로젝트 현황 반영 업데이트 ([9f9031b](https://github.com/JungYeoni/da-template/commit/9f9031bc9d199c7b47111a32b9b685697ef62b11))
 - CHANGELOG 자동 업데이트 [skip ci] ([1a942ed](https://github.com/JungYeoni/da-template/commit/1a942edaab226e5212f553ecb78f3c78711f1713))
 - CHANGELOG 자동 업데이트 [skip ci] ([90df4b5](https://github.com/JungYeoni/da-template/commit/90df4b582d5dea7e757c14627b09c1fbbeb26e67))
@@ -26,6 +27,7 @@
 
 ### 새 기능
 
+- README에 최근 변경사항 자동 주입 추가 ([9f75bca](https://github.com/JungYeoni/da-template/commit/9f75bca111ca93aa0778eed023c81edf1b7d2c81))
 - API 키 환경변수 로더 추가 및 노트북 하드코딩 제거 ([d7b48e6](https://github.com/JungYeoni/da-template/commit/d7b48e66694a4175a6f52e2091d6020e1dfbd9b4))
 
 
