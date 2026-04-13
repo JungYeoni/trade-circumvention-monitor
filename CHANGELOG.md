@@ -15,6 +15,8 @@
 
 ### 문서
 
+- README 프로젝트 현황 반영 업데이트 ([9f9031b](https://github.com/JungYeoni/da-template/commit/9f9031bc9d199c7b47111a32b9b685697ef62b11))
+- CHANGELOG 자동 업데이트 [skip ci] ([1a942ed](https://github.com/JungYeoni/da-template/commit/1a942edaab226e5212f553ecb78f3c78711f1713))
 - CHANGELOG 자동 업데이트 [skip ci] ([90df4b5](https://github.com/JungYeoni/da-template/commit/90df4b582d5dea7e757c14627b09c1fbbeb26e67))
 - CHANGELOG 자동 업데이트 [skip ci] ([d86aec4](https://github.com/JungYeoni/da-template/commit/d86aec47dc133275318fcd87f161a869005ae722))
 - CHANGELOG 자동 업데이트 [skip ci] ([97372d5](https://github.com/JungYeoni/da-template/commit/97372d51caead39f88eb4aedb89035aa37982169))
