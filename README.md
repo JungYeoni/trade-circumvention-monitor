@@ -50,6 +50,7 @@ CUSTOMS_TRADE_STATS_API_KEY=...
 <!-- CHANGELOG_START -->
 ## 최근 변경사항
 **기타**
+- 이슈 템플릿을 da-template 컨셉에 맞게 교체 ([`ac1de93`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/ac1de93fc42aeb0cc930c788c5d6d94a31586b9a))
 - Src/data 패키지 및 테스트 파일 초기화 ([`dce932e`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/dce932e1f730f62bd96c0051fded5c858ad777af))
 - Requirements.lock → uv.lock으로 교체 ([`81d0e78`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/81d0e7856e1380d1468d05f78c9d7473c13ed6ef))
 - Requirements.txt 제거 (pyproject.toml + requirements.lock으로 통합) ([`b0cd57c`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/b0cd57c834c4d2a2cf2b6c578d4c21cbcfaea48c))
@@ -60,6 +61,7 @@ CUSTOMS_TRADE_STATS_API_KEY=...
 - 노트북 Cell 0, 1 수정 — collect_russia_trade() 함수 호출로 교체 ([`3deaefc`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/3deaefc9f11bc21e3cb913b42ff429239bf0424b))
 
 **문서**
+- CHANGELOG 자동 업데이트 [skip ci] ([`def5235`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/def5235c7c779317cbc4123e9677cb6270724f9d))
 - CHANGELOG 자동 업데이트 [skip ci] ([`21574e6`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/21574e668ab4568078710161bfedc700216e4757))
 - Comtrade 수집 함수 분리 구현 계획 추가 ([`614acff`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/614acffe3529dd6f17b847bab62d1fb6687a0dd1))
 - CHANGELOG 자동 업데이트 [skip ci] ([`84bbd29`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/84bbd29a8cd8716ac6c963fab5c42aed68e61e63))
