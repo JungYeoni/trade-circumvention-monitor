@@ -180,6 +180,13 @@ pytest tests/ -v
 
 ---
 
+## 최근 변경사항
+
+<!-- CHANGELOG_START -->
+<!-- CHANGELOG_END -->
+
+---
+
 ## 라이선스
 
 MIT
