@@ -50,12 +50,17 @@ CUSTOMS_TRADE_STATS_API_KEY=...
 <!-- CHANGELOG_START -->
 ## 최근 변경사항
 **기타**
+- Src/data 패키지 및 테스트 파일 초기화 ([`dce932e`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/dce932e1f730f62bd96c0051fded5c858ad777af))
 - Requirements.lock → uv.lock으로 교체 ([`81d0e78`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/81d0e7856e1380d1468d05f78c9d7473c13ed6ef))
 - Requirements.txt 제거 (pyproject.toml + requirements.lock으로 통합) ([`b0cd57c`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/b0cd57c834c4d2a2cf2b6c578d4c21cbcfaea48c))
 - Requirements.lock 추가 및 분석 노트북 초기 커밋 ([`5dd59cb`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/5dd59cb698d5b69ae1d2d5bb418dfb15ba8096ab))
 - Uv 패키지 매니저로 전환 ([`8bf325f`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/8bf325f9eafddd183daefd7f629f70266b8898a9))
 
+**리팩터링**
+- 노트북 Cell 0, 1 수정 — collect_russia_trade() 함수 호출로 교체 ([`3deaefc`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/3deaefc9f11bc21e3cb913b42ff429239bf0424b))
+
 **문서**
+- CHANGELOG 자동 업데이트 [skip ci] ([`21574e6`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/21574e668ab4568078710161bfedc700216e4757))
 - Comtrade 수집 함수 분리 구현 계획 추가 ([`614acff`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/614acffe3529dd6f17b847bab62d1fb6687a0dd1))
 - CHANGELOG 자동 업데이트 [skip ci] ([`84bbd29`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/84bbd29a8cd8716ac6c963fab5c42aed68e61e63))
 - Comtrade 수집 함수 분리 설계 문서 추가 ([`e620872`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/e6208725dca6440c21f4ddc424757ad05b09a619))
@@ -73,12 +78,14 @@ CUSTOMS_TRADE_STATS_API_KEY=...
 - CHANGELOG 자동 업데이트 [skip ci] ([`c67b20e`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/c67b20eafe2aa7e47910f375c89a6816583d034c))
 
 **버그 수정**
+- Comtrade_client 코드 품질 개선 (타입 체크, copy, 상수 분리) ([`e4ea9c0`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/e4ea9c0cf9849a2f4ea7075be29541edb5d3696d))
 - Docs/superpowers 스펙 문서 git 추적 허용 ([`c4b5d6b`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/c4b5d6b4ed999279df877ae5e173ff911465d992))
 
 **분석 노트북**
 - 분석 내용 업데이트 ([`730b38b`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/730b38b7cbc31e97913307c3d6c1e3c3c8669790))
 
 **새 기능**
+- UN Comtrade 수집 함수 collect_russia_trade 추가 ([`83fc545`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/83fc545ebd3f2a84f8a7ae6b0ac4ffa99ade1792))
 - README에 최근 변경사항 자동 주입 추가 ([`9f75bca`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/9f75bca111ca93aa0778eed023c81edf1b7d2c81))
 - API 키 환경변수 로더 추가 및 노트북 하드코딩 제거 ([`d7b48e6`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/d7b48e66694a4175a6f52e2091d6020e1dfbd9b4))
 <!-- CHANGELOG_END -->
