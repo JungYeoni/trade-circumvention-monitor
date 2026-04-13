@@ -56,6 +56,8 @@ CUSTOMS_TRADE_STATS_API_KEY=...
 - Uv 패키지 매니저로 전환 ([`8bf325f`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/8bf325f9eafddd183daefd7f629f70266b8898a9))
 
 **문서**
+- Comtrade 수집 함수 분리 구현 계획 추가 ([`614acff`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/614acffe3529dd6f17b847bab62d1fb6687a0dd1))
+- CHANGELOG 자동 업데이트 [skip ci] ([`84bbd29`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/84bbd29a8cd8716ac6c963fab5c42aed68e61e63))
 - Comtrade 수집 함수 분리 설계 문서 추가 ([`e620872`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/e6208725dca6440c21f4ddc424757ad05b09a619))
 - CHANGELOG 자동 업데이트 [skip ci] ([`c4a19bf`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/c4a19bff79c568c7c3e751cba13b1dc299002c44))
 - README 프로젝트 전용으로 재작성, cliff.toml 보고서 형식으로 업데이트 ([`ba8faa7`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/ba8faa7f47c47de92830707de2174e7210471e1a))
