@@ -72,3 +72,4 @@ htmlcov/
 
 # 문서 / 설계 산출물
 docs/
+!docs/superpowers/
