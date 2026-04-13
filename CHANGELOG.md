@@ -2,6 +2,10 @@
 
 ## 미출시 변경사항
 
+### notebooks
+
+- 분석 내용 업데이트 ([730b38b](https://github.com/JungYeoni/da-template/commit/730b38b7cbc31e97913307c3d6c1e3c3c8669790))
+
 ### 기타
 
 - Requirements.lock → uv.lock으로 교체 ([81d0e78](https://github.com/JungYeoni/da-template/commit/81d0e7856e1380d1468d05f78c9d7473c13ed6ef))
@@ -11,6 +15,7 @@
 
 ### 문서
 
+- CHANGELOG 자동 업데이트 [skip ci] ([90df4b5](https://github.com/JungYeoni/da-template/commit/90df4b582d5dea7e757c14627b09c1fbbeb26e67))
 - CHANGELOG 자동 업데이트 [skip ci] ([d86aec4](https://github.com/JungYeoni/da-template/commit/d86aec47dc133275318fcd87f161a869005ae722))
 - CHANGELOG 자동 업데이트 [skip ci] ([97372d5](https://github.com/JungYeoni/da-template/commit/97372d51caead39f88eb4aedb89035aa37982169))
 - CHANGELOG 자동 업데이트 [skip ci] ([47a605f](https://github.com/JungYeoni/da-template/commit/47a605f9f0385a4586671595b53f326f2a47fb1c))
