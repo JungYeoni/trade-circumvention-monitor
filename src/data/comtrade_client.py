@@ -1,10 +1,13 @@
 # src/data/comtrade_client.py
 """UN Comtrade API 데이터 수집 함수."""
 
-import pandas as pd
 import comtradeapicall
+import pandas as pd
 
 from src.config import get_comtrade_api_key
+
+# Comtrade API 상수
+MAX_RECORDS_PER_REQUEST = 250_000  # 단일 요청 최대 레코드 수
 
 
 def collect_russia_trade(
@@ -58,7 +61,7 @@ def collect_russia_trade(
                 partner2Code=None,
                 customsCode=None,
                 motCode=None,
-                maxRecords=250000,
+                maxRecords=MAX_RECORDS_PER_REQUEST,
                 format_output="JSON",
                 aggregateBy=None,
                 breakdownMode="plus",
@@ -66,10 +69,11 @@ def collect_russia_trade(
                 includeDesc=True,
             )
 
-            if df is None or len(df) == 0:
+            if df is None or not isinstance(df, pd.DataFrame) or df.empty:
                 print(f"  -> no data or error for {r_name}, {year}")
                 continue
 
+            df = df.copy()
             df["reporterName"] = r_name
             all_list.append(df)
 
