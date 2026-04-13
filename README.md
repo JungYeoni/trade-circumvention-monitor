@@ -23,7 +23,8 @@
 da-template/
 ├── CLAUDE.md                     # 프로젝트 분석 원칙 (Claude Code 지침)
 ├── pyproject.toml                # Python 의존성 및 도구 설정
-├── requirements.txt              # 핵심 의존성 목록
+├── uv.lock                       # 의존성 버전 고정 (uv 자동 관리)
+├── .env                          # API 키 설정 (git 추적 제외)
 ├── .gitignore
 │
 ├── .claude/
@@ -62,6 +63,7 @@ da-template/
 ├── reports/          # 최종 보고서·시각화 산출물
 │
 ├── src/
+│   ├── config.py                    # API 키 로더 (환경변수에서 로드)
 │   ├── features/
 │   │   └── build_features.py    # 시계열·테이블·GIS 피처 함수
 │   ├── modeling/
@@ -84,12 +86,15 @@ da-template/
 git clone https://github.com/JungYeoni/da-template.git my-project
 cd my-project
 
-# 2. 가상환경 생성 및 의존성 설치
-python -m venv .venv
+# 2. 가상환경 생성 및 의존성 설치 (uv 사용)
+uv venv --python 3.12
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 
-# 3. 테스트 실행 (환경 확인)
+# 3. API 키 설정
+cp .env.example .env               # .env 파일 생성 후 키 값 입력
+
+# 4. 테스트 실행 (환경 확인)
 pytest tests/ -v
 ```
 
