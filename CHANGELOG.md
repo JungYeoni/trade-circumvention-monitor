@@ -11,9 +11,14 @@
 
 ### 문서
 
+- CHANGELOG 자동 업데이트 [skip ci] ([d86aec4](https://github.com/JungYeoni/da-template/commit/d86aec47dc133275318fcd87f161a869005ae722))
 - CHANGELOG 자동 업데이트 [skip ci] ([97372d5](https://github.com/JungYeoni/da-template/commit/97372d51caead39f88eb4aedb89035aa37982169))
 - CHANGELOG 자동 업데이트 [skip ci] ([47a605f](https://github.com/JungYeoni/da-template/commit/47a605f9f0385a4586671595b53f326f2a47fb1c))
 - CHANGELOG 자동 업데이트 [skip ci] ([8d515b4](https://github.com/JungYeoni/da-template/commit/8d515b421a6f0263f3f84b45b5b5cf8fb8ba3c3c))
 - CHANGELOG 자동 업데이트 [skip ci] ([c67b20e](https://github.com/JungYeoni/da-template/commit/c67b20eafe2aa7e47910f375c89a6816583d034c))
+
+### 새 기능
+
+- API 키 환경변수 로더 추가 및 노트북 하드코딩 제거 ([d7b48e6](https://github.com/JungYeoni/da-template/commit/d7b48e66694a4175a6f52e2091d6020e1dfbd9b4))
 
 
