@@ -2,6 +2,7 @@
 
 ## 최근 변경사항
 **기타**
+- 불필요한 워크플로우 파일 제거 ([`0226332`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/02263324b005f97e82d8b4909fca61e2aef4c933))
 - 이슈 템플릿 name 및 제목 형식 개선 ([`113e0a9`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/113e0a97c096d90b0944df0f65650fb6e4bd196e))
 - 이슈 템플릿을 da-template 컨셉에 맞게 교체 ([`ac1de93`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/ac1de93fc42aeb0cc930c788c5d6d94a31586b9a))
 - Src/data 패키지 및 테스트 파일 초기화 ([`dce932e`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/dce932e1f730f62bd96c0051fded5c858ad777af))
@@ -14,6 +15,7 @@
 - 노트북 Cell 0, 1 수정 — collect_russia_trade() 함수 호출로 교체 ([`3deaefc`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/3deaefc9f11bc21e3cb913b42ff429239bf0424b))
 
 **문서**
+- CHANGELOG 자동 업데이트 [skip ci] ([`c7c97f3`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/c7c97f31dcf595dc327088fc87fbd97926055eb5))
 - CHANGELOG 자동 업데이트 [skip ci] ([`6340711`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/63407117fc4e7a76ea4dac4d6c5b89fedaa85e9a))
 - CHANGELOG 자동 업데이트 [skip ci] ([`def5235`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/def5235c7c779317cbc4123e9677cb6270724f9d))
 - CHANGELOG 자동 업데이트 [skip ci] ([`21574e6`](https://github.com/JungYeoni/trade-circumvention-monitor/commit/21574e668ab4568078710161bfedc700216e4757))
