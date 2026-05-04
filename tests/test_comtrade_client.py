@@ -1,11 +1,10 @@
 # tests/test_comtrade_client.py
 """comtrade_client 단위 테스트."""
 from unittest.mock import patch
+
 import pandas as pd
-import pytest
 
 from src.data.comtrade_client import collect_russia_trade
-
 
 SAMPLE_DF = pd.DataFrame({
     "refYear": [2022, 2022],
