@@ -1,0 +1,11 @@
+# 분석 보고서 목록
+
+이 폴더는 `notebooks`의 분석 내용을 카테고리별 문서로 정리한 것이다.
+
+| 문서 | 카테고리 | 내용 |
+|---|---|---|
+| `01_data_sources_and_api.md` | 데이터 소스/API | UN Comtrade와 관세청 API 사용 목적, 주요 파라미터, 분석용 컬럼 |
+| `02_sanctions_trade_shift.md` | 제재 전후 무역 변화 | 러시아 제재 이후 HS 8542, HS 7210 대러 수출 변화 분석 결과 |
+| `03_data_quality_and_limitations.md` | 데이터 품질/한계 | 결측, API 오류, 해석 보류 국가, 분석상 주의점 |
+| `04_notebook_review.md` | 노트북 점검 | 노트북별 역할, 확인된 산출물, 보완 필요 사항 |
+| `05_data_catalog.md` | 데이터 카탈로그 | 로컬 원천 데이터와 API 기반 논리 데이터셋 목록, 컬럼, 저장 권장 경로 |
