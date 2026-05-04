@@ -1,19 +1,22 @@
 # tests/test_comtrade_client.py
 """comtrade_client 단위 테스트."""
+
 from unittest.mock import patch
 
 import pandas as pd
 
 from src.data.comtrade_client import collect_russia_trade
 
-SAMPLE_DF = pd.DataFrame({
-    "refYear": [2022, 2022],
-    "refMonth": [3, 4],
-    "cmdCode": ["7210", "8542"],
-    "flowCode": ["X", "X"],
-    "primaryValue": [1000000, 2000000],
-    "reporterDesc": ["Armenia", "Armenia"],
-})
+SAMPLE_DF = pd.DataFrame(
+    {
+        "refYear": [2022, 2022],
+        "refMonth": [3, 4],
+        "cmdCode": ["7210", "8542"],
+        "flowCode": ["X", "X"],
+        "primaryValue": [1000000, 2000000],
+        "reporterDesc": ["Armenia", "Armenia"],
+    }
+)
 
 
 class TestCollectRussiaTrade:
@@ -63,7 +66,9 @@ class TestCollectRussiaTrade:
             reporter_code = kwargs.get("reporterCode")
             return armenia_df if reporter_code == "51" else kazakhstan_df
 
-        with patch("src.data.comtrade_client.comtradeapicall.getFinalData", side_effect=side_effect):
+        with patch(
+            "src.data.comtrade_client.comtradeapicall.getFinalData", side_effect=side_effect
+        ):
             result = collect_russia_trade(
                 reporters=reporters,
                 hs_codes="7210,8542",

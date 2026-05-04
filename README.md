@@ -27,10 +27,8 @@ UN Comtrade 및 관세청 API를 활용해 품목·국가별 수출입 데이터
 ## 환경 설정
 
 ```bash
-# 가상환경 생성 및 의존성 설치
-uv venv --python 3.12
-source .venv/bin/activate
-uv pip install -e ".[dev]"
+# 의존성 설치
+uv sync --extra dev
 
 # API 키 설정
 cp .env.example .env  # .env에 키 값 입력
@@ -42,6 +40,8 @@ cp .env.example .env  # .env에 키 값 입력
 COMTRADE_API_KEY=...
 CUSTOMS_TRADE_STATS_API_KEY=...
 ```
+
+자세한 의존성 관리 방식은 `DEPENDENCY_MANAGEMENT.md`를 참고하세요.
 
 ## 라이선스
 
