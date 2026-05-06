@@ -23,7 +23,10 @@ class TestCollectRussiaTrade:
     def test_returns_dataframe(self):
         """정상 응답 시 DataFrame 반환."""
         reporters = {"Armenia": "51"}
-        with patch("src.data.comtrade_client.comtradeapicall.getFinalData", return_value=SAMPLE_DF):
+        with (
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
+            patch("src.data.comtrade_client.comtradeapicall.getFinalData", return_value=SAMPLE_DF),
+        ):
             result = collect_russia_trade(
                 reporters=reporters,
                 hs_codes="7210,8542",
@@ -35,7 +38,10 @@ class TestCollectRussiaTrade:
     def test_reporter_name_column_added(self):
         """reporterName 컬럼이 추가되어야 함."""
         reporters = {"Armenia": "51"}
-        with patch("src.data.comtrade_client.comtradeapicall.getFinalData", return_value=SAMPLE_DF):
+        with (
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
+            patch("src.data.comtrade_client.comtradeapicall.getFinalData", return_value=SAMPLE_DF),
+        ):
             result = collect_russia_trade(
                 reporters=reporters,
                 hs_codes="7210,8542",
@@ -47,7 +53,10 @@ class TestCollectRussiaTrade:
     def test_empty_response_skipped(self):
         """API가 None 반환 시 건너뜀 → 빈 DataFrame."""
         reporters = {"UAE": "784"}
-        with patch("src.data.comtrade_client.comtradeapicall.getFinalData", return_value=None):
+        with (
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
+            patch("src.data.comtrade_client.comtradeapicall.getFinalData", return_value=None),
+        ):
             result = collect_russia_trade(
                 reporters=reporters,
                 hs_codes="7210,8542",
@@ -66,8 +75,12 @@ class TestCollectRussiaTrade:
             reporter_code = kwargs.get("reporterCode")
             return armenia_df if reporter_code == "51" else kazakhstan_df
 
-        with patch(
-            "src.data.comtrade_client.comtradeapicall.getFinalData", side_effect=side_effect
+        with (
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
+            patch(
+                "src.data.comtrade_client.comtradeapicall.getFinalData",
+                side_effect=side_effect,
+            ),
         ):
             result = collect_russia_trade(
                 reporters=reporters,
