@@ -73,4 +73,7 @@ htmlcov/
 
 # 문서 / 설계 산출물
 docs/
+!docs/
+docs/*
+!docs/regulation-event-pipeline-design.md
 !docs/superpowers/

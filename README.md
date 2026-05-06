@@ -18,9 +18,10 @@ UN Comtrade 및 관세청 API를 활용해 품목·국가별 수출입 데이터
 
 | 파일 | 내용 |
 |------|------|
-| `UN Comtrade.ipynb` | Comtrade API 연동 및 데이터 수집 기초 |
-| `제재_이후_특정_제_3국의_대리_수출이_구조적으로_증가했는가.ipynb` | 제재 전후 월별 수출 시계열 분석, 국가별 증가율 비교 |
-| `관세청_수출입실적(GW).ipynb` | 관세청 API 연동 및 품목별 수출입 데이터 수집 |
+| `01_un_comtrade_api_example.ipynb` | Comtrade API 연동 및 데이터 수집 기초 |
+| `02_customs_trade_api_example.ipynb` | 관세청 API 연동 및 품목별 수출입 데이터 수집 |
+| `03_russia_sanctions_trade_shift_analysis.ipynb` | 제재 전후 월별 대러 수출 시계열 분석, 국가별 증가율 비교 |
+| `04_regulation_event_preprocessing.ipynb` | 덤핑방지 관세 원천 데이터를 규제 이벤트·HS 매핑 템플릿·분석 후보 테이블로 전처리 |
 
 ---
 

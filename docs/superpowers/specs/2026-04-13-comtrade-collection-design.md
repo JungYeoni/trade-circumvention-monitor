@@ -1,7 +1,7 @@
 # 설계 문서: UN Comtrade 데이터 수집 함수 분리
 
 **날짜:** 2026-04-13  
-**대상 파일:** `제재_이후_특정_제_3국의_대리_수출이_구조적으로_증가했는가.ipynb`
+**대상 파일:** `03_russia_sanctions_trade_shift_analysis.ipynb`
 
 ---
 
@@ -102,7 +102,7 @@ all_df = collect_russia_trade(
 |------|----------|
 | `src/data/__init__.py` | 신규 생성 |
 | `src/data/comtrade_client.py` | 신규 생성 |
-| `notebooks/제재_이후_특정_제_3국의_대리_수출이_구조적으로_증가했는가.ipynb` | Cell 1 교체 |
+| `notebooks/03_russia_sanctions_trade_shift_analysis.ipynb` | Cell 1 교체 |
 
 ---
 

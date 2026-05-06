@@ -244,7 +244,7 @@ git commit -m "feat: UN Comtrade 수집 함수 collect_russia_trade 추가"
 ### Task 3: 노트북 Cell 1 교체
 
 **Files:**
-- Modify: `notebooks/제재_이후_특정_제_3국의_대리_수출이_구조적으로_증가했는가.ipynb` (Cell 0, Cell 1)
+- Modify: `notebooks/03_russia_sanctions_trade_shift_analysis.ipynb` (Cell 0, Cell 1)
 
 - [ ] **Step 1: Cell 0 — import 추가**
 
@@ -288,7 +288,7 @@ Cell 2(`ts = all_df[...]`)부터 이하 셀은 `all_df` 변수를 그대로 사�
 - [ ] **Step 4: 커밋**
 
 ```bash
-git add "notebooks/제재_이후_특정_제_3국의_대리_수출이_구조적으로_증가했는가.ipynb"
+git add "notebooks/03_russia_sanctions_trade_shift_analysis.ipynb"
 git commit -m "refactor: 노트북 Cell 1 수집 루프를 collect_russia_trade() 호출로 교체"
 ```
 

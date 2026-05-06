@@ -60,7 +60,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 생성 위치 | `notebooks/제재_이후_특정_제_3국의_대리_수출이_구조적으로_증가했는가.ipynb` |
+| 생성 위치 | `notebooks/03_russia_sanctions_trade_shift_analysis.ipynb` |
 | 수집 함수 | `src/data/comtrade_client.py::collect_russia_trade()` |
 | 원천 | UN Comtrade API |
 | 인증 | `.env`의 `COMTRADE_API_KEY` |
@@ -117,7 +117,7 @@ data/processed/russia_trade_missing_summary_2020_2024.csv
 
 | 항목 | 내용 |
 |---|---|
-| 생성 위치 | `notebooks/UN Comtrade.ipynb` |
+| 생성 위치 | `notebooks/01_un_comtrade_api_example.ipynb` |
 | 원천 | UN Comtrade API |
 | 인증 | `.env`의 `COMTRADE_API_KEY` |
 | 기간 | 2020-2024 요청, 출력 확인은 2020-2023 |
@@ -134,7 +134,7 @@ data/processed/russia_trade_missing_summary_2020_2024.csv
 
 | 항목 | 내용 |
 |---|---|
-| 생성 위치 | `notebooks/관세청_수출입실적(GW).ipynb` |
+| 생성 위치 | `notebooks/02_customs_trade_api_example.ipynb` |
 | 원천 | 관세청 공공데이터포털 API |
 | 인증 | `.env`의 `CUSTOMS_TRADE_STATS_API_KEY` |
 | 엔드포인트 | `https://apis.data.go.kr/1220000/nitemtrade/getNitemtradeList` |
@@ -178,4 +178,3 @@ data/interim/customs_trade_<hs_code>_<country>_<start>_<end>.csv
 - 결측 처리, 국가명 표준화, 제재 전후 요약 결과는 `data/processed`에 저장한다.
 - 외부 API 데이터는 수집 시점, 파라미터, 실패 국가/연도를 함께 기록한다.
 - 한국어 CSV는 인코딩을 명시한다. 현재 원천 CSV는 `encoding="cp949"`로 읽어야 한다.
-

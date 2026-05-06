@@ -9,7 +9,7 @@
 
 ## UN Comtrade API
 
-확인 노트북: `notebooks/UN Comtrade.ipynb`, `notebooks/제재_이후_특정_제_3국의_대리_수출이_구조적으로_증가했는가.ipynb`
+확인 노트북: `notebooks/01_un_comtrade_api_example.ipynb`, `notebooks/03_russia_sanctions_trade_shift_analysis.ipynb`
 
 ### 주요 파라미터
 
@@ -49,7 +49,7 @@
 
 ## 관세청 품목별 국가별 수출입실적 API
 
-확인 노트북: `notebooks/관세청_수출입실적(GW).ipynb`
+확인 노트북: `notebooks/02_customs_trade_api_example.ipynb`
 
 ### 주요 파라미터
 
@@ -92,4 +92,3 @@ API 키는 `src/config.py`에서 `.env`를 통해 로드한다.
 COMTRADE_API_KEY=...
 CUSTOMS_TRADE_STATS_API_KEY=...
 ```
-
