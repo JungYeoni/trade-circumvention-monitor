@@ -17,6 +17,123 @@ AEA 게재 논문의 공식 replication package를 분석하여 아래 세 가�
 
 ---
 
+## 0. 패키지 구성 및 각 파일 역할
+
+### 폴더 구조
+
+```
+229004-V1/
+├── master code.do          ← 전체 실행 진입점
+├── README.pdf
+├── Raw-data/               ← 3개 파일만 포함 (Comtrade 원본 CSV는 미포함)
+│   ├── EU_sanctions_HS6.dta       ✅ 제재 품목 리스트 (우리 분석 완료)
+│   ├── COMTRADE partners.dta      ✅ 국가코드 → 국가명 매핑
+│   └── COMTRADE reporters.dta     ✅ 국가코드 → 국가명 매핑
+├── Do-files/               ← Stata 코드 5개 전부 있음
+│   ├── Clean monthly data.do
+│   ├── Clean annual data.do
+│   ├── Figure 1.do
+│   ├── Figure 2.do
+│   └── Figure 3.do
+├── Figures/                ← 결과 Excel (코드 없이도 최종 수치 확인 가능)
+│   ├── Figure 1.xlsx
+│   ├── Figure 2.xlsx
+│   └── Figure 3.xlsx
+├── Clean-data/             ← 비어있음 (원본 CSV 있어야 생성됨)
+└── Working-data/           ← 비어있음 (중간 산출물)
+```
+
+### `master code.do` — 전체 실행 진입점
+
+연구자가 본인 컴퓨터 경로만 입력하면 전체 분석이 자동으로 실행되는 파일이다.  
+Python의 `main.py`에 해당한다.
+
+```stata
+global RAWDATA   = "$PROJ/Raw-data"
+global CLEANDATA = "$PROJ/Clean-data"
+global FIGURES   = "$PROJ/Figures"
+
+do "$CODE/Clean monthly data.do"   ← 월별 데이터 정제
+do "$CODE/Clean annual data.do"    ← 연간 데이터 정제
+do "$CODE/Figure 1.do"             ← Figure 생성
+do "$CODE/Figure 2.do"
+do "$CODE/Figure 3.do"
+```
+
+`do` 명령어는 Python의 `exec()`처럼 다른 파일을 불러와 실행한다.
+
+### `Clean monthly data.do` — 원본 CSV → Stata 포맷 변환 (월별)
+
+두 개의 원본 CSV를 정제한다. 원본 CSV는 패키지에 미포함(UN Comtrade 직접 다운로드 필요).
+
+| 원본 파일 | 내용 | 산출물 |
+|-----------|------|--------|
+| `monthly_trade_data.csv` | EU/UK → 수신국 월별 수출 | `Clean-data/monthly_trade_data.dta` |
+| `CCA3 exports.csv` | CCA3 → 수신국 월별 수출 | `Clean-data/CCA3 exports.dta` |
+
+공통 처리: `partner2code == 0` 필터(직접 양자 무역만), HS6 코드 앞자리 0 처리(5자리→6자리), 국가명 merge.
+
+### `Clean annual data.do` — "Lost in Transit" 데이터셋 생성 (핵심)
+
+논문의 핵심 방법론을 구현하는 파일이다.
+
+**아이디어**: 수출국 신고액과 수입국 신고액의 차이로 우회 규모를 추정한다.
+
+```
+EU가 "X국에 Y품목 $100 수출" 신고
+         ↕ 비교
+X국이 "EU로부터 Y품목 $60 수입" 신고
+→ $40 차이 = 제3국(러시아)으로 우회된 물량 추정
+```
+
+**처리 흐름**:
+1. `full_annual_exports.csv` → 수출자 신고 데이터 정제
+2. `full_annual_imports.csv` → 수입자 신고 데이터 정제
+3. `(수출국, 수입국, HS6, 연도)` 기준 merge
+4. 양쪽 모두 신고가 있는 쌍만 유지 (한쪽만 있으면 제외)
+5. 산출물: `Clean-data/Lost in transit annual.dta`
+
+### `Figure 1.do` — EU/UK의 대러시아·CCA3 수출 시계열
+
+- **상단**: EU/UK → 러시아 월별 수출 (제재 유형 4그룹별)
+- **하단**: EU/UK → CCA3 월별 수출 (제재 유형 4그룹별)
+
+목적: 2022년 2월 제재 이후 러시아 직접 수출은 줄고 CCA3 우회 수출은 늘었는지 시각화.
+
+### `Figure 2.do` — CCA3 → 러시아 재수출 시계열
+
+CCA3가 EU 제재 품목을 러시아로 얼마나 재수출했는지 시계열 플롯.  
+조지아 제외(결측 과다 — 우리 노트북 03과 동일한 판단).
+
+### `Figure 3.do` — 수출자/수입자 신고 불일치 분석 (DiD 핵심)
+
+"Lost in transit" 비율을 제재 전후로 비교한다.
+
+```
+log(수입자 신고액 / 수출자 신고액)
+  → 정상 ≈ 0
+  → 제재 후 dual-use 품목에서 이 값이 커짐
+    = 실제로 더 많이 들어갔다 = 우회무역 증거
+```
+
+3개 그룹으로 나눠 비교:
+1. **CCA3** — 제재 유형 4그룹으로 세분화
+2. **기타 육로국가** (아제르바이잔·벨라루스·중국·몽골 등) — 전체 합산
+3. **나머지 세계** — 전체 합산
+
+### 데이터 가용성 요약
+
+| 파일 | 포함 여부 | 비고 |
+|------|-----------|------|
+| `EU_sanctions_HS6.dta` | ✅ | 우리 분석 완료 → `eu_sanctions_hs6.csv` |
+| `COMTRADE partners/reporters.dta` | ✅ | 국가코드 매핑용 |
+| `monthly_trade_data.csv` | ❌ | UN Comtrade 직접 다운로드 필요 |
+| `CCA3 exports.csv` | ❌ | UN Comtrade 직접 다운로드 필요 |
+| `full_annual_exports/imports.csv` | ❌ | UN Comtrade 직접 다운로드 필요 |
+| `Figures/*.xlsx` | ✅ | 최종 결과 수치 바로 확인 가능 |
+
+---
+
 ## 1. EU 제재 품목 HS6 리스트 (`EU_sanctions_HS6.dta`)
 
 EU Regulation 833/2014 기반의 HS6 단위 제재 품목 리스트다.  
