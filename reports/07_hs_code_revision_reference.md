@@ -110,3 +110,27 @@ comtrade_code = HS_VERSION_TO_COMTRADE[hs_version]  # "H2"
 - UN Comtrade는 보고국이 사용한 개정판 기준으로 데이터를 저장한다. 같은 연도라도 국가마다 다른 개정판을 쓸 수 있다.
 - 한 품목이 개정판 전환 시 코드가 바뀌지 않는 경우도 많다. Correlation Table에서 변경 여부를 반드시 확인해야 한다.
 - 반덤핑 규제 기간이 1989년부터 시작되는 경우 `HS1992(H0)` 이전 데이터가 필요할 수 있으나, UN Comtrade는 사실상 1990년대 초부터 데이터를 제공한다.
+
+---
+
+## 작업 결과 (2026-05-15)
+
+### 활성 규제 품목 HS 코드 확인 결과
+
+웹 검색(WCO, tariffnumber.com, credlix.com 등) 및 한국 반덤핑 고시 교차 확인으로 아래 7개 품목의 HS 코드를 확정했다.
+
+| 품목명 | HS 코드 | 설명 | 참고 출처 |
+|--------|---------|------|----------|
+| 도공 인쇄용지 | 481014 | Coated paper, sheets | 한국 반덤핑 고시 확인 |
+| 부틸글리콜에테르 | 290943 | Monobutyl ethers of ethylene glycol | WCO HS2022 Ch.29 |
+| 수산화알루미늄 | 281830 | Aluminium hydroxide | WCO HS2022 Ch.28 |
+| 이음매없는동관 | 741110 | Tubes and pipes of refined copper | WCO HS2022 Ch.74 |
+| 인쇄제판용 평면모양 사진 플레이트 | 370130 | Photographic plates >255mm | 한국 반덤핑 고시 확인 |
+| 차아황산소다 | 283110 | Dithionites and sulphoxylates of sodium | WCO HS2022 Ch.28 |
+| 폴리에스테르 장섬유 완전연신사 | 540247 | Polyester FDY | 한국 반덤핑 고시 확인 |
+
+### 매핑 현황
+
+- 전체 품목: 72개
+- HS 코드 확인 완료: 35개 (48.6%)
+- 수동 입력 필요: 37개 (51.4%) — 대부분 종료된 규제 품목
