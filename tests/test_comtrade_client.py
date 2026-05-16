@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from src.data.comtrade_client import collect_russia_trade
+from src.data.comtrade_client import collect_comtrade_trade, collect_russia_trade
 
 SAMPLE_DF = pd.DataFrame(
     {
@@ -88,3 +88,42 @@ class TestCollectRussiaTrade:
                 years=[2022],
             )
         assert set(result["reporterName"].unique()) == {"Armenia", "Kazakhstan"}
+
+
+class TestCollectComtradeTrade:
+    def test_collects_multiple_reporter_partner_pairs(self):
+        reporters = {"Viet Nam": "704", "Korea": "410"}
+        partners = {"World": "0"}
+
+        with (
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
+            patch("src.data.comtrade_client.comtradeapicall.getFinalData", return_value=SAMPLE_DF) as patched,
+        ):
+            result = collect_comtrade_trade(
+                reporters=reporters,
+                partners=partners,
+                hs_codes="72",
+                periods=["2020", "2021"],
+                flows="X",
+                freq_code="A",
+            )
+
+        assert patched.call_count == 2
+        assert set(result["reporterName"].unique()) == {"Viet Nam", "Korea"}
+        assert (result["partnerName"] == "World").all()
+        assert patched.call_args.kwargs["period"] == "2020,2021"
+
+    def test_empty_responses_return_empty_dataframe(self):
+        with (
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
+            patch("src.data.comtrade_client.comtradeapicall.getFinalData", return_value=None),
+        ):
+            result = collect_comtrade_trade(
+                reporters="all",
+                partners="410",
+                hs_codes="72",
+                periods="2020",
+            )
+
+        assert isinstance(result, pd.DataFrame)
+        assert result.empty

@@ -10,6 +10,97 @@ from src.config import get_comtrade_api_key
 MAX_RECORDS_PER_REQUEST = 250_000  # 단일 요청 최대 레코드 수
 
 
+def _normalize_code_mapping(values: dict[str, str] | list[str] | str, label: str) -> dict[str, str]:
+    """Normalize one or many API codes to a {name: code} mapping."""
+    if isinstance(values, dict):
+        return values
+    if isinstance(values, str):
+        return {values: values}
+    if isinstance(values, list):
+        return {str(value): str(value) for value in values}
+    raise TypeError(f"{label} must be a dict, list, or string.")
+
+
+def collect_comtrade_trade(
+    reporters: dict[str, str] | list[str] | str,
+    partners: dict[str, str] | list[str] | str,
+    hs_codes: str,
+    periods: list[str] | str,
+    flows: str = "M,X",
+    freq_code: str = "M",
+    type_code: str = "C",
+    classification_code: str = "HS",
+    max_records: int = MAX_RECORDS_PER_REQUEST,
+    include_desc: bool = True,
+) -> pd.DataFrame:
+    """Collect UN Comtrade data for one or many reporter/partner countries.
+
+    Parameters
+    ----------
+    reporters
+        Reporter country codes. Use {"Korea": "410"}, ["410", "704"], or "all".
+    partners
+        Partner country codes. Use {"Russia": "643"}, ["643"], or "all".
+    hs_codes
+        Comma-separated HS codes, for example "7210,8542" or "TOTAL".
+    periods
+        Comtrade periods. Monthly example: ["202401", "202402"]. Annual example: "2020,2021".
+    flows
+        Comma-separated flow codes, for example "M,X".
+    freq_code
+        "M" for monthly or "A" for annual data.
+
+    Returns
+    -------
+    pd.DataFrame
+        Concatenated Comtrade response. Empty DataFrame when all requests are empty.
+    """
+    api_key = get_comtrade_api_key()
+    reporter_map = _normalize_code_mapping(reporters, "reporters")
+    partner_map = _normalize_code_mapping(partners, "partners")
+    period_str = ",".join(periods) if isinstance(periods, list) else periods
+    all_frames = []
+
+    for reporter_name, reporter_code in reporter_map.items():
+        for partner_name, partner_code in partner_map.items():
+            print(f"Collecting Comtrade reporter={reporter_name}, partner={partner_name} ...")
+
+            df = comtradeapicall.getFinalData(
+                api_key,
+                typeCode=type_code,
+                freqCode=freq_code,
+                clCode=classification_code,
+                period=period_str,
+                reporterCode=reporter_code,
+                cmdCode=hs_codes,
+                flowCode=flows,
+                partnerCode=partner_code,
+                partner2Code=None,
+                customsCode=None,
+                motCode=None,
+                maxRecords=max_records,
+                format_output="JSON",
+                aggregateBy=None,
+                breakdownMode="plus",
+                countOnly=None,
+                includeDesc=include_desc,
+            )
+
+            if df is None or not isinstance(df, pd.DataFrame) or df.empty:
+                print(f"  -> no data for reporter={reporter_name}, partner={partner_name}")
+                continue
+
+            df = df.copy()
+            df["reporterName"] = reporter_name
+            df["partnerName"] = partner_name
+            all_frames.append(df)
+
+    if not all_frames:
+        return pd.DataFrame()
+
+    return pd.concat(all_frames, ignore_index=True)
+
+
 def collect_russia_trade(
     reporters: dict[str, str],
     hs_codes: str,
