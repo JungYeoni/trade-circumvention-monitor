@@ -24,9 +24,7 @@ class TestCollectRussiaTrade:
         """정상 응답 시 DataFrame 반환."""
         reporters = {"Armenia": "51"}
         with (
-            patch(
-                "src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"
-            ),
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
             patch(
                 "src.data.comtrade_client.comtradeapicall.getFinalData",
                 return_value=SAMPLE_DF,
@@ -44,9 +42,7 @@ class TestCollectRussiaTrade:
         """reporterName 컬럼이 추가되어야 함."""
         reporters = {"Armenia": "51"}
         with (
-            patch(
-                "src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"
-            ),
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
             patch(
                 "src.data.comtrade_client.comtradeapicall.getFinalData",
                 return_value=SAMPLE_DF,
@@ -64,9 +60,7 @@ class TestCollectRussiaTrade:
         """API가 None 반환 시 건너뜀 → 빈 DataFrame."""
         reporters = {"UAE": "784"}
         with (
-            patch(
-                "src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"
-            ),
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
             patch(
                 "src.data.comtrade_client.comtradeapicall.getFinalData",
                 return_value=None,
@@ -91,9 +85,7 @@ class TestCollectRussiaTrade:
             return armenia_df if reporter_code == "51" else kazakhstan_df
 
         with (
-            patch(
-                "src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"
-            ),
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
             patch(
                 "src.data.comtrade_client.comtradeapicall.getFinalData",
                 side_effect=side_effect,
@@ -113,9 +105,7 @@ class TestCollectComtradeData:
         partners = {"World": "0"}
 
         with (
-            patch(
-                "src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"
-            ),
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
             patch(
                 "src.data.comtrade_client.comtradeapicall.getFinalData",
                 return_value=SAMPLE_DF,
@@ -137,9 +127,7 @@ class TestCollectComtradeData:
 
     def test_columns_can_be_selected(self):
         with (
-            patch(
-                "src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"
-            ),
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
             patch(
                 "src.data.comtrade_client.comtradeapicall.getFinalData",
                 return_value=SAMPLE_DF,
@@ -164,9 +152,7 @@ class TestCollectComtradeData:
 
     def test_empty_responses_return_empty_dataframe(self):
         with (
-            patch(
-                "src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"
-            ),
+            patch("src.data.comtrade_client.get_comtrade_api_key", return_value="test-key"),
             patch(
                 "src.data.comtrade_client.comtradeapicall.getFinalData",
                 return_value=None,

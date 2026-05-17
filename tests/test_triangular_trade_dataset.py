@@ -33,9 +33,7 @@ def test_make_triangular_trade_collection_plan_creates_three_flows_per_intermedi
             }
         ]
     )
-    intermediaries = pd.DataFrame(
-        [{"event_id": "AD-0001-01", "intermediary_country": "베트남"}]
-    )
+    intermediaries = pd.DataFrame([{"event_id": "AD-0001-01", "intermediary_country": "베트남"}])
     country_codes = pd.DataFrame(
         [
             {
@@ -67,9 +65,9 @@ def test_make_triangular_trade_collection_plan_creates_three_flows_per_intermedi
         plan.loc[plan["flow_type"].eq(FLOW_REGULATED_TO_INTERMEDIARY), "source"].item()
         == SOURCE_COMTRADE
     )
-    assert set(
-        plan.loc[~plan["flow_type"].eq(FLOW_REGULATED_TO_INTERMEDIARY), "source"]
-    ) == {SOURCE_CUSTOMS}
+    assert set(plan.loc[~plan["flow_type"].eq(FLOW_REGULATED_TO_INTERMEDIARY), "source"]) == {
+        SOURCE_CUSTOMS
+    }
     assert plan["start_yymm"].eq("201903").all()
     assert plan["end_yymm"].eq("202109").all()
 
@@ -90,9 +88,7 @@ def test_normalize_comtrade_response_fills_missing_months():
             "periods": "202001,202002",
         }
     )
-    response = pd.DataFrame(
-        [{"refYear": 2020, "refMonth": 1, "qty": "10", "primaryValue": "200"}]
-    )
+    response = pd.DataFrame([{"refYear": 2020, "refMonth": 1, "qty": "10", "primaryValue": "200"}])
 
     rows = normalize_comtrade_response(request, response)
 
@@ -167,27 +163,17 @@ def test_collect_triangular_trade_with_resume_skips_ok_requests(tmp_path: Path):
             }
         ]
     ).to_csv(status_path, index=False)
-    pd.DataFrame(
-        [_long_row(FLOW_REGULATED_TO_INTERMEDIARY, SOURCE_COMTRADE, 1, 1)]
-    ).to_csv(long_path, index=False)
+    pd.DataFrame([_long_row(FLOW_REGULATED_TO_INTERMEDIARY, SOURCE_COMTRADE, 1, 1)]).to_csv(
+        long_path, index=False
+    )
 
     with (
-        patch(
-            "src.data.triangular_trade_dataset.get_comtrade_api_key", return_value="key"
-        ),
-        patch(
-            "src.data.triangular_trade_dataset.get_customs_api_key", return_value="key"
-        ),
-        patch(
-            "src.data.triangular_trade_dataset.collect_one_triangular_request"
-        ) as patched,
+        patch("src.data.triangular_trade_dataset.get_comtrade_api_key", return_value="key"),
+        patch("src.data.triangular_trade_dataset.get_customs_api_key", return_value="key"),
+        patch("src.data.triangular_trade_dataset.collect_one_triangular_request") as patched,
     ):
-        patched.return_value = [
-            _long_row(FLOW_REGULATED_TO_INTERMEDIARY, SOURCE_COMTRADE, 2, 2)
-        ]
-        collect_triangular_trade_with_resume(
-            plan_path, status_path, long_path, panel_path
-        )
+        patched.return_value = [_long_row(FLOW_REGULATED_TO_INTERMEDIARY, SOURCE_COMTRADE, 2, 2)]
+        collect_triangular_trade_with_resume(plan_path, status_path, long_path, panel_path)
 
     assert patched.call_count == 1
     status = pd.read_csv(status_path)

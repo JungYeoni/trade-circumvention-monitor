@@ -95,9 +95,7 @@ LONG_COLUMNS = [
 STATUS_COLUMNS = ["request_id", "status", "rows", "error", "started_at", "finished_at"]
 
 
-def make_month_periods(
-    start_date: str | pd.Timestamp, end_date: str | pd.Timestamp
-) -> list[str]:
+def make_month_periods(start_date: str | pd.Timestamp, end_date: str | pd.Timestamp) -> list[str]:
     """Return YYYYMM month periods from start month to end month inclusive."""
     start = pd.Period(pd.to_datetime(start_date), freq="M")
     end = pd.Period(pd.to_datetime(end_date), freq="M")
@@ -113,9 +111,7 @@ def event_collection_window(
 ) -> tuple[pd.Timestamp, pd.Timestamp]:
     """Return regulation window: start - 1 year through min(end + 1 year, today)."""
     today_ts = (
-        pd.Timestamp.today().normalize()
-        if today is None
-        else pd.to_datetime(today).normalize()
+        pd.Timestamp.today().normalize() if today is None else pd.to_datetime(today).normalize()
     )
     collection_start = pd.to_datetime(start_date) - pd.DateOffset(years=1)
     collection_end = min(pd.to_datetime(end_date) + pd.DateOffset(years=1), today_ts)
@@ -174,9 +170,7 @@ def make_triangular_trade_collection_plan(
         "end_date",
     ]
     optional_cols = ["duty_text_raw", "duty_type", "duty_rate_min", "duty_rate_max"]
-    event_cols.extend(
-        [col for col in optional_cols if col in regulation_events.columns]
-    )
+    event_cols.extend([col for col in optional_cols if col in regulation_events.columns])
 
     events = regulation_events[event_cols].copy()
     pairs = events.merge(intermediary_candidates, on="event_id", how="inner")
@@ -187,10 +181,7 @@ def make_triangular_trade_collection_plan(
         intermediary_country = str(row["intermediary_country"])
         if not row.get("hs_code") or pd.isna(row.get("hs_code")):
             continue
-        if (
-            regulated_country == intermediary_country
-            or intermediary_country == importer_country
-        ):
+        if regulated_country == intermediary_country or intermediary_country == importer_country:
             continue
 
         regulated_codes = _lookup_country_codes(code_map, regulated_country)
@@ -276,9 +267,7 @@ def collect_triangular_trade_with_resume(
     plan_path = Path(plan_path)
     status_path = Path(status_path)
     long_raw_path = Path(long_raw_path)
-    panel_partial_path = (
-        Path(panel_partial_path) if panel_partial_path is not None else None
-    )
+    panel_partial_path = Path(panel_partial_path) if panel_partial_path is not None else None
 
     plan = pd.read_csv(plan_path, dtype=str).fillna("")
     status = _read_csv_or_empty(status_path, STATUS_COLUMNS)
@@ -298,9 +287,7 @@ def collect_triangular_trade_with_resume(
 
         started_at = pd.Timestamp.now().isoformat(timespec="seconds")
         try:
-            rows = collect_one_triangular_request(
-                request, comtrade_api_key, customs_api_key
-            )
+            rows = collect_one_triangular_request(request, comtrade_api_key, customs_api_key)
             long_records.extend(rows)
             status_records.append(
                 {
@@ -409,9 +396,7 @@ def collect_one_triangular_request(
     raise ValueError(f"Unknown source: {request['source']}")
 
 
-def collect_customs_request(
-    request: pd.Series, customs_api_key: str | None = None
-) -> pd.DataFrame:
+def collect_customs_request(request: pd.Series, customs_api_key: str | None = None) -> pd.DataFrame:
     """Collect one Korea Customs request from a plan row."""
     api_key = customs_api_key or get_customs_api_key()
     params = {
@@ -433,9 +418,7 @@ def collect_customs_request(
     return pd.DataFrame(items)
 
 
-def normalize_comtrade_response(
-    request: pd.Series, response_df: pd.DataFrame
-) -> list[dict]:
+def normalize_comtrade_response(request: pd.Series, response_df: pd.DataFrame) -> list[dict]:
     """Normalize UN Comtrade response to monthly long rows."""
     periods = request["periods"].split(",")
     if response_df is None or response_df.empty:
@@ -444,9 +427,7 @@ def normalize_comtrade_response(
     df = response_df.copy()
     year_col = _first_existing_column(df, ["refYear", "period"])
     month_col = _first_existing_column(df, ["refMonth"])
-    quantity_col = _first_existing_column(
-        df, ["qty", "netWgt", "grossWgt", "primaryQuantity"]
-    )
+    quantity_col = _first_existing_column(df, ["qty", "netWgt", "grossWgt", "primaryQuantity"])
     value_col = _first_existing_column(df, ["primaryValue", "fobvalue", "cifvalue"])
 
     df["year_month"] = _coerce_year_month(df, year_col, month_col)
@@ -471,28 +452,19 @@ def normalize_comtrade_response(
         )
         for _, row in grouped.iterrows()
     }
-    return [
-        rows_by_month.get(period, _empty_long_row(request, period))
-        for period in periods
-    ]
+    return [rows_by_month.get(period, _empty_long_row(request, period)) for period in periods]
 
 
-def normalize_customs_response(
-    request: pd.Series, response_df: pd.DataFrame
-) -> list[dict]:
+def normalize_customs_response(request: pd.Series, response_df: pd.DataFrame) -> list[dict]:
     """Normalize Korea Customs response to monthly long rows."""
     periods = request["periods"].split(",")
     if response_df is None or response_df.empty:
         return [_empty_long_row(request, period) for period in periods]
 
     df = response_df.copy()
-    period_col = _first_existing_column(
-        df, ["year", "statKor", "baseYm", "yymm", "trdeYymm"]
-    )
+    period_col = _first_existing_column(df, ["year", "statKor", "baseYm", "yymm", "trdeYymm"])
     quantity_col = _first_existing_column(df, ["impWgt", "expWgt", "qty", "imxprQy"])
-    value_col = _first_existing_column(
-        df, ["impDlr", "expDlr", "usdAmt", "imxprUsdAmt"]
-    )
+    value_col = _first_existing_column(df, ["impDlr", "expDlr", "usdAmt", "imxprUsdAmt"])
     if period_col is None:
         df["year_month"] = pd.NA
     else:
@@ -520,15 +492,10 @@ def normalize_customs_response(
         )
         for _, row in grouped.iterrows()
     }
-    return [
-        rows_by_month.get(period, _empty_long_row(request, period))
-        for period in periods
-    ]
+    return [rows_by_month.get(period, _empty_long_row(request, period)) for period in periods]
 
 
-def build_triangular_trade_panel(
-    long_df: pd.DataFrame, plan_df: pd.DataFrame
-) -> pd.DataFrame:
+def build_triangular_trade_panel(long_df: pd.DataFrame, plan_df: pd.DataFrame) -> pd.DataFrame:
     """Build the wide triangular panel from normalized long flow rows."""
     if long_df.empty:
         return pd.DataFrame()
@@ -628,9 +595,7 @@ def _read_csv_or_empty(path: Path, columns: Iterable[str]) -> pd.DataFrame:
     return pd.DataFrame(columns=list(columns))
 
 
-def _lookup_country_codes(
-    code_map: pd.DataFrame, country_name: str
-) -> dict[str, str] | None:
+def _lookup_country_codes(code_map: pd.DataFrame, country_name: str) -> dict[str, str] | None:
     if country_name not in code_map.index:
         return None
     row = code_map.loc[country_name]
@@ -665,16 +630,12 @@ def _first_existing_column(df: pd.DataFrame, candidates: list[str]) -> str | Non
     return None
 
 
-def _coerce_year_month(
-    df: pd.DataFrame, year_col: str | None, month_col: str | None
-) -> pd.Series:
+def _coerce_year_month(df: pd.DataFrame, year_col: str | None, month_col: str | None) -> pd.Series:
     if year_col is None:
         return pd.Series(pd.NA, index=df.index)
     if month_col is None:
         return df[year_col].map(_normalize_yymm_value)
-    return df[year_col].astype(str).str.zfill(4) + df[month_col].astype(str).str.zfill(
-        2
-    )
+    return df[year_col].astype(str).str.zfill(4) + df[month_col].astype(str).str.zfill(2)
 
 
 def _normalize_yymm_value(value: object) -> str:
