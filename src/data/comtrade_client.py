@@ -10,6 +10,27 @@ from src.config import get_comtrade_api_key
 MAX_RECORDS_PER_REQUEST = 250_000  # 단일 요청 최대 레코드 수
 
 
+def _normalize_code_mapping(
+    values: dict[str, str] | list[str] | tuple[str, ...] | str,
+    label: str,
+) -> dict[str, str]:
+    """Normalize one or many API codes to a {name: code} mapping."""
+    if isinstance(values, dict):
+        return {str(name): str(code) for name, code in values.items()}
+    if isinstance(values, str):
+        return {values: values}
+    if isinstance(values, (list, tuple)):
+        return {str(code): str(code) for code in values}
+    raise TypeError(f"{label} must be a dict, list, tuple, or string.")
+
+
+def _normalize_periods(periods: list[int | str] | tuple[int | str, ...] | str) -> str:
+    """Convert period values to the comma-separated Comtrade API format."""
+    if isinstance(periods, str):
+        return periods
+    return ",".join(str(period) for period in periods)
+
+
 def collect_russia_trade(
     reporters: dict[str, str],
     hs_codes: str,
@@ -81,3 +102,99 @@ def collect_russia_trade(
         return pd.DataFrame()
 
     return pd.concat(all_list, ignore_index=True)
+
+
+def collect_comtrade_data(
+    reporters: dict[str, str] | list[str] | tuple[str, ...] | str,
+    partners: dict[str, str] | list[str] | tuple[str, ...] | str,
+    hs_codes: str,
+    periods: list[int | str] | tuple[int | str, ...] | str,
+    flows: str = "M,X",
+    freq_code: str = "M",
+    columns: list[str] | tuple[str, ...] | None = None,
+) -> pd.DataFrame:
+    """Collect UN Comtrade data for arbitrary reporter and partner countries.
+
+    Parameters
+    ----------
+    reporters
+        Reporter country codes. A dict keeps readable names, e.g.
+        ``{"Korea": "410", "China": "156"}``; a list/string uses the code as
+        both name and code.
+    partners
+        Partner country codes. Same format as ``reporters``.
+    hs_codes
+        Comma-separated HS codes, e.g. ``"7210,8542"`` or ``"TOTAL"``.
+    periods
+        Comtrade periods. For monthly data use ``"202401,202402"`` or a list.
+        For annual data use ``freq_code="A"`` and values like ``["2022"]``.
+    flows
+        Flow code sent to Comtrade. Common values are ``"M"``, ``"X"``, or
+        ``"M,X"``.
+    freq_code
+        Comtrade frequency code. ``"M"`` for monthly, ``"A"`` for annual.
+    columns
+        Optional columns to keep in the returned DataFrame. Helper columns
+        ``reporterName`` and ``partnerName`` are included when requested.
+
+    Returns
+    -------
+    pd.DataFrame
+        Concatenated Comtrade responses. Empty responses are skipped; if every
+        request is empty, returns an empty DataFrame.
+    """
+    api_key = get_comtrade_api_key()
+    reporter_map = _normalize_code_mapping(reporters, "reporters")
+    partner_map = _normalize_code_mapping(partners, "partners")
+    period_str = _normalize_periods(periods)
+    all_list = []
+
+    for reporter_name, reporter_code in reporter_map.items():
+        for partner_name, partner_code in partner_map.items():
+            print(
+                "Collecting Comtrade "
+                f"reporter={reporter_name} partner={partner_name} "
+                f"hs={hs_codes} periods={period_str} flows={flows} ..."
+            )
+
+            df = comtradeapicall.getFinalData(
+                api_key,
+                typeCode="C",
+                freqCode=freq_code,
+                clCode="HS",
+                period=period_str,
+                reporterCode=reporter_code,
+                cmdCode=hs_codes,
+                flowCode=flows,
+                partnerCode=partner_code,
+                partner2Code=None,
+                customsCode=None,
+                motCode=None,
+                maxRecords=MAX_RECORDS_PER_REQUEST,
+                format_output="JSON",
+                aggregateBy=None,
+                breakdownMode="plus",
+                countOnly=None,
+                includeDesc=True,
+            )
+
+            if df is None or not isinstance(df, pd.DataFrame) or df.empty:
+                print(f"  -> no data or error for {reporter_name}, {partner_name}")
+                continue
+
+            df = df.copy()
+            df["reporterName"] = reporter_name
+            df["partnerName"] = partner_name
+            all_list.append(df)
+
+    if not all_list:
+        return pd.DataFrame(columns=list(columns) if columns is not None else None)
+
+    result = pd.concat(all_list, ignore_index=True)
+    if columns is not None:
+        for col in columns:
+            if col not in result.columns:
+                result[col] = pd.NA
+        result = result[list(columns)]
+
+    return result
