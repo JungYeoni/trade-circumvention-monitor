@@ -10,17 +10,6 @@ from src.config import get_comtrade_api_key
 MAX_RECORDS_PER_REQUEST = 250_000  # 단일 요청 최대 레코드 수
 
 
-def _normalize_code_mapping(values: dict[str, str] | list[str] | str, label: str) -> dict[str, str]:
-    """Normalize one or many API codes to a {name: code} mapping."""
-    if isinstance(values, dict):
-        return values
-    if isinstance(values, str):
-        return {values: values}
-    if isinstance(values, list):
-        return {str(value): str(value) for value in values}
-    raise TypeError(f"{label} must be a dict, list, or string.")
-
-
 def collect_comtrade_trade(
     reporters: dict[str, str] | list[str] | str,
     partners: dict[str, str] | list[str] | str,
