@@ -65,7 +65,6 @@ HS 코드 6단위 확정 및 품목명 공식 검증 작업을 수행했다. 원
 | 스테인리스 스틸바 | 722210 | Bars and rods of stainless steel, hot-rolled | 기존 7219 오류 수정 |
 | 스테인리스스틸바 | 722210 | Bars and rods of stainless steel, hot-rolled | 기존 7219 오류 수정 |
 | 아나타제형 이산화티타늄 | 320611 | Pigments based on titanium dioxide, ≥80% TiO₂ | WCO 체계 확인, 안료 제형 기준 |
-| 아연도금철선 | 721720 | Zinc coated wire of iron or non-alloy steel | WCO 체계 확인 |
 | 알루미나 시멘트 | 252340 | Aluminous cement | WCO 체계 명확히 규정 |
 | 알칼리망간 건전지 | 850610 | Manganese dioxide cells and batteries | EU TARIC 확인 |
 | 에탄올아민 | 292219 | Amino-alcohols, other | MEA·DEA·TEA 혼합물 포함 |
