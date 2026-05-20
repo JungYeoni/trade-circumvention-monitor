@@ -16,19 +16,65 @@ REPORT_PATH = REPORTS_DIR / "08_antidumping_hs_mapping_status.md"
 
 HS_COLUMNS = ["HS1992", "HS1996", "HS2002", "HS2007", "HS2012", "HS2017", "HS2022"]
 
+# hs_version 값 → HS_COLUMNS 이름 매핑
+HS_VERSION_TO_COL = {
+    "HS1992": "HS1992",
+    "HS1996": "HS1996",
+    "HS2002": "HS2002",
+    "HS2007": "HS2007",
+    "HS2012": "HS2012",
+    "HS2017": "HS2017",
+    "HS2022": "HS2022",
+}
+
 
 def _read_csv(path: Path) -> pd.DataFrame:
+    """CSV 파일을 모든 컬럼을 str로 읽어 반환한다."""
     return pd.read_csv(path, dtype=str, keep_default_na=False, encoding="utf-8-sig")
 
 
 def _clean_hs_code(value: str) -> str:
+    """HS 코드 문자열에서 공백·소수점 접미사를 제거해 정규화한다."""
     value = value.strip()
     if value.endswith(".0"):
         value = value[:-2]
     return value.replace(".", "")
 
 
+def _pivot_long_to_wide(history: pd.DataFrame) -> pd.DataFrame:
+    """long-format 이력 테이블(품목×개정판)을 wide-format(품목 1행)으로 변환한다.
+
+    입력 컬럼: 품목명_정규화, 품목명_원문예시, hs_version, hs_code, mapping_status, note 등
+    출력 컬럼: 품목명_정규화, 품목명_원문예시, HS1992…HS2022, mapping_status, note
+    """
+    wide = history.pivot_table(
+        index=["품목명_정규화", "품목명_원문예시"],
+        columns="hs_version",
+        values="hs_code",
+        aggfunc="first",
+    ).reset_index()
+    wide.columns.name = None
+
+    # hs_version 값과 HS_COLUMNS 이름이 동일하므로 별도 rename 불필요.
+    # 누락된 개정판 컬럼은 빈 문자열로 채운다.
+    for col in HS_COLUMNS:
+        if col not in wide.columns:
+            wide[col] = ""
+
+    # mapping_status, note는 H6(최신) 기준으로 가져온다.
+    meta = (
+        history[history["hs_version"] == "HS2022"][
+            ["품목명_정규화", "품목명_원문예시", "mapping_status", "note"]
+        ]
+        .drop_duplicates(subset=["품목명_정규화"])
+    )
+    wide = wide.merge(meta, on=["품목명_정규화", "품목명_원문예시"], how="left")
+
+    return wide.fillna("")
+
+
 def _issue_type(row: pd.Series) -> str:
+    """wide-format 행의 HS 코드 상태를 분류해 이슈 타입 문자열을 반환한다."""
     codes = [_clean_hs_code(row[col]) for col in HS_COLUMNS]
     filled = [code for code in codes if code]
 
@@ -42,6 +88,7 @@ def _issue_type(row: pd.Series) -> str:
 
 
 def _suggested_action(issue_type: str) -> str:
+    """이슈 타입에 따른 권장 조치 문자열을 반환한다."""
     if issue_type == "missing_all":
         return "HS2022 6단위 후보를 먼저 확정한 뒤 과거 개정판으로 역매핑"
     if issue_type == "partial_missing":
@@ -52,6 +99,23 @@ def _suggested_action(issue_type: str) -> str:
 
 
 def build_review_table(history: pd.DataFrame, events: pd.DataFrame) -> pd.DataFrame:
+    """이력 테이블과 이벤트 테이블을 결합해 검토목록 DataFrame을 반환한다.
+
+    history가 long-format(hs_revision 컬럼 존재)이면 자동으로 wide-format으로 변환한다.
+    wide-format에 HS_COLUMNS가 없으면 ValueError를 발생시킨다.
+    """
+    # long-format 감지: hs_revision 컬럼이 있으면 pivot
+    if "hs_revision" in history.columns:
+        history = _pivot_long_to_wide(history)
+
+    # wide-format 스키마 검증
+    missing_cols = [col for col in HS_COLUMNS if col not in history.columns]
+    if missing_cols:
+        raise ValueError(
+            f"history 테이블에 필요한 컬럼이 없습니다: {missing_cols}\n"
+            "wide-format(HS1992~HS2022 컬럼 포함)이거나 long-format(hs_revision 컬럼 포함)이어야 합니다."
+        )
+
     event_summary = (
         events.groupby("product_name_normalized", as_index=False)
         .agg(
@@ -99,6 +163,7 @@ def build_review_table(history: pd.DataFrame, events: pd.DataFrame) -> pd.DataFr
 
 
 def build_report(review: pd.DataFrame) -> str:
+    """검토목록 DataFrame을 마크다운 리포트 문자열로 변환해 반환한다."""
     counts = review["issue_type"].value_counts().reindex(
         ["missing_all", "not_six_digit", "partial_missing", "complete_6digit"],
         fill_value=0,
@@ -162,6 +227,7 @@ def build_report(review: pd.DataFrame) -> str:
 
 
 def main() -> None:
+    """이력 테이블과 이벤트 데이터를 읽어 검토목록 CSV와 마크다운 리포트를 생성한다."""
     history = _read_csv(HISTORY_PATH)
     events = _read_csv(EVENTS_PATH)
 
