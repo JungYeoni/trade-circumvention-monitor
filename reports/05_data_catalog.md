@@ -338,7 +338,7 @@
 
 #### 저장 권장 경로
 
-```
+```text
 data/interim/comtrade_monthly_2020_2024_russia_7210_8542.csv
 data/processed/russia_trade_shift_summary_2020_2024.csv
 ```
@@ -368,7 +368,7 @@ data/processed/russia_trade_shift_summary_2020_2024.csv
 
 #### 저장 권장 경로
 
-```
+```text
 data/interim/customs_trade_<hs_code>_<country>_<start>_<end>.csv
 ```
 
