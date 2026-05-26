@@ -1,0 +1,6 @@
+comtradeapicall
+python-dotenv
+numpy
+pandas
+matplotlib
+requests
