@@ -85,6 +85,224 @@
 
 ---
 
+### regulation_events_atomic(~2015).csv
+
+| 항목 | 내용 |
+|------|------|
+| 생성 노트북 | `notebooks/05_regulation_events_atomize.ipynb` |
+| 원천 | `data/interim/regulation_events.csv` |
+| 행 수 | 155 |
+| 컬럼 수 | 20 |
+| 성격 | 2015년 이전 시작 반덤핑 사건 필터링 + 수집 기간(window) 산출 |
+
+#### 컬럼 정의
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `event_id` | str | 이벤트 고유 ID (`AD-XXXX-YY`) |
+| `source_row_id` | int | 원천 파일 행 번호 |
+| `origin_country_name_kr` | str | 부과 대상 국가명 |
+| `origin_country_iso3` | str | ISO3 국가 코드 |
+| `product_name_kr` | str | 품목명 |
+| `product_name_normalized` | str | 정규화 품목명 |
+| `hs_code` | int | HS 코드 (6자리) |
+| `duty_text_raw` | str | 관세부과범위 원문 |
+| `duty_type` | str | 관세 유형 |
+| `duty_rate_min` | float | 관세율 최솟값 (%) |
+| `duty_rate_max` | float | 관세율 최댓값 (%) |
+| `has_price_undertaking` | bool | 가격약속 여부 |
+| `has_reference_price_diff` | bool | 기준가격 차액 방식 여부 |
+| `has_partial_exclusion` | bool | 일부 제외 여부 |
+| `start_date` | str | 부과 시작일 (YYYY-MM-DD) |
+| `end_date` | str | 부과 종료일 |
+| `duration_days` | int | 부과 기간 (일) |
+| `is_active_as_of_extract` | bool | 추출 기준일 현행 여부 |
+| `window_start` | str | 수집 시작 기간 (YYYY-MM, 규제 시작 1년 전) |
+| `window_end` | str | 수집 종료 기간 (YYYY-MM, 규제 시작 1년 후) |
+
+#### 주요 집계
+
+- 고유 source_row_id: 62개 / window 범위: 2014-01 ~ 2026-12
+
+---
+
+### customs_flow0_flow2_raw.csv
+
+| 항목 | 내용 |
+|------|------|
+| 생성 노트북 | `notebooks/06_customs_flow0_flow2_collection.ipynb` |
+| 원천 | 관세청 품목별 국가별 수출입실적 API |
+| 행 수 | 141,907 |
+| 컬럼 수 | 17 |
+| 성격 | 반덤핑 규제 이벤트별 관세청 수입 데이터 (규제국→한국 flow0 + 제3국→한국 flow2) |
+| 캐시 | `data/interim/cache/customs/*.parquet` (84개) |
+
+#### 컬럼 정의
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `trade_date` | str | 기준 연월 (YYYY-MM 문자열, 예: "2020-10") |
+| `country_iso2` | str | 수입 상대국 ISO2 코드 |
+| `country_name_kr` | str | 수입 상대국 명 (한국어) |
+| `hs_code` | int | 실제 관세청 세부 HS 코드 (10자리) |
+| `imp_wgt` | int | 수입 중량 (kg) |
+| `imp_dlr` | int | 수입 금액 (USD) |
+| `hs_code_query` | int | API 조회 기준 HS 코드 (6자리) |
+| `window_start` | str | 수집 기간 시작 (YYYY-MM) |
+| `window_end` | str | 수집 기간 종료 (YYYY-MM) |
+| `flow` | int | 흐름 분류 (0=규제국→한국, 2=제3국→한국) — HS/window 묶음 기준 |
+| `event_id` | str | 규제 이벤트 ID |
+| `source_row_id` | int | 원천 파일 행 번호 |
+| `origin_country_name_kr` | str | 규제 대상 국가명 |
+| `origin_country_iso3` | str | 규제 대상 국가 ISO3 |
+| `product_name_kr` | str | 품목명 |
+| `start_date` | str | 규제 시작일 |
+| `end_date` | str | 규제 종료일 |
+
+#### 사용상 주의
+
+- `trade_date`는 `YYYY-MM` 문자열 형식으로 저장. 파싱 시 `format="%Y-%m"` 사용.
+- `flow` 컬럼은 HS/window 묶음 단위 분류라 사건 간 오분류 있음. 분석 시 `09` 노트북의 `flow_corrected` 사용 권장.
+
+---
+
+### comtrade_flow1_raw.csv
+
+| 항목 | 내용 |
+|------|------|
+| 생성 노트북 | `notebooks/08_comtrade_flow1_collection.ipynb` |
+| 원천 | UN Comtrade API (월별 상품 무역 통계) |
+| 행 수 | 18,375 |
+| 컬럼 수 | 14 |
+| 성격 | 규제국→중간국 수출(flow1) 월별 데이터 |
+
+#### 컬럼 정의
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `trade_date` | int | 기준 연월 (YYYYMM 정수, 예: 202010) |
+| `reporter_code` | int | Comtrade reporter 코드 (규제국) |
+| `partner_code` | int | Comtrade partner 코드 (중간국) |
+| `hs_code_query` | int | 조회 HS 코드 (6자리) |
+| `exp_dlr` | float | 수출 금액 (USD) |
+| `exp_qty` | float | 수출 수량 |
+| `origin_country_iso3` | str | 규제국 ISO3 |
+| `intermediary_iso2` | str | 중간국 ISO2 |
+| `window_start` | str | 수집 기간 시작 (YYYY-MM) |
+| `window_end` | str | 수집 기간 종료 (YYYY-MM) |
+| `source_row_id` | int | 원천 파일 행 번호 |
+| `after` | float | after 기간 월평균 수출액 (수집 당시 집계) |
+| `before` | float | before 기간 월평균 수출액 (수집 당시 집계) |
+| `increase` | float | after − before 증가액 |
+
+#### 주요 집계
+
+- 고유 중간국(intermediary_iso2): 42개 / 고유 규제국(origin_country_iso3): 19개
+- TWN(대만)은 Comtrade reporter 코드 490(`Other Asia, nes`)으로 매핑
+
+#### 사용상 주의
+
+- `after`, `before`, `increase` 컬럼은 수집 시점 기준 집계값으로, 최신 flow1 분석에는 `09` 노트북의 `before_after_pivot()` 재산정 값을 사용한다.
+- 후보국 선정이 `flow == 2`(old) 기준이라 corrected flow2 기준 22개 조합은 미수집 상태 (Issue 5.1).
+
+---
+
+### circumvention_suspects.csv
+
+| 항목 | 내용 |
+|------|------|
+| 생성 노트북 | `notebooks/09_triangular_trade_analysis.ipynb` |
+| 원천 | `customs_flow0_flow2_raw.csv`, `comtrade_flow1_raw.csv` |
+| 행 수 | 3,652 |
+| 컬럼 수 | 14 |
+| 성격 | (source_row_id × intermediary_iso2) 전체 조합 우회 점수 및 의심 여부 |
+
+#### 컬럼 정의
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `source_row_id` | int | 규제 사건 ID |
+| `product_name_kr` | str | 품목명 |
+| `intermediary_iso2` | str | 중간국 ISO2 |
+| `f0_before` | float | flow0 before 월평균 수입액 (USD) |
+| `f0_after` | float | flow0 after 월평균 수입액 (USD) |
+| `f0_pct` | float | flow0 변화율 (%) |
+| `f2_before` | float | flow2 before 월평균 수입액 (USD) |
+| `f2_after` | float | flow2 after 월평균 수입액 (USD) |
+| `f2_pct` | float | flow2 변화율 (%) |
+| `f1_before` | float | flow1 before 월평균 수출액 (USD) |
+| `f1_after` | float | flow1 after 월평균 수출액 (USD) |
+| `f1_pct` | float | flow1 변화율 (%) |
+| `is_suspect` | bool | 우회 의심 여부 (f0↓ & f2↑ & f1↑ 동시 충족) |
+| `suspicion_score` | float | 우회 강도 점수 (f2_pct + f1_pct, suspect만 부여) |
+
+#### 주요 집계
+
+- is_suspect=True: **43건** / 고유 사건: **23개**
+- 1위: 스테인리스평판압연/VN (6,382.1점)
+- suspicion_score = f2_pct + f1_pct (음수 클리핑, 절대 금액 미반영)
+
+#### 버전 이력
+
+| 버전 | is_suspect 수 | 고유 사건 | 주요 변경 |
+|------|------------:|--------:|----------|
+| v1 (총합 기준) | 37 | — | 최초 |
+| v2 (월평균) | 34 | 23개 | Issue 3·4 수정 |
+| v3 (hs_code dedup) | **43** | 25개 | Issue 5.3 수정 |
+| v4 (trade_date 수정) | **43** | **23개** | Issue 5.4 수정 |
+
+---
+
+### price_volume_decomposition.csv
+
+| 항목 | 내용 |
+|------|------|
+| 생성 노트북 | `notebooks/10_price_volume_decomposition.ipynb` |
+| 원천 | `circumvention_suspects.csv`, `customs_flow0_flow2_raw.csv` |
+| 행 수 | 43 |
+| 컬럼 수 | 17 |
+| 성격 | 우회 의심 케이스의 금액 증가를 물량 효과·가격 효과로 분해 |
+
+#### 컬럼 정의
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `source_row_id` | int | 규제 사건 ID |
+| `product_name_kr` | str | 품목명 |
+| `intermediary_iso2` | str | 중간국 ISO2 |
+| `suspicion_score` | float | 우회 강도 점수 (09 기준) |
+| `type` | str | 유형 분류 (아래 참조) |
+| `dlr_pct` | float | 금액 변화율 (%) |
+| `wgt_pct` | float | 중량 변화율 (%, 물량 효과 proxy) |
+| `price_pct` | float | 가중 단가 변화율 (%, 가격 효과 proxy) |
+| `avg_dlr_before` | float | before 월평균 수입액 (USD) |
+| `avg_dlr_after` | float | after 월평균 수입액 (USD) |
+| `avg_wgt_before` | float | before 월평균 수입 중량 (kg) |
+| `avg_wgt_after` | float | after 월평균 수입 중량 (kg) |
+| `w_unit_price_before` | float | before 가중 단가 (USD/kg) |
+| `w_unit_price_after` | float | after 가중 단가 (USD/kg) |
+| `n_months_before` | float | before 관측 월 수 |
+| `n_months_after` | float | after 관측 월 수 |
+| `zero_wgt_rate_after` | float | after 기간 중량=0인 월 비율 |
+
+#### 유형 분류 기준
+
+| 유형 | 조건 | 건수 |
+|------|------|------|
+| 물량증가형 | dlr↑ + wgt↑ + price 안정(±20% 이내) | 27 |
+| 신규유입형 | before 금액=0, after 양수 | 5 |
+| 혼합형 | dlr↑ + wgt↑ + price↑ (before 단가 존재) | 4 |
+| 기타 | dlr↑ + wgt↑ + price↓ | 4 |
+| 가격상승형 | dlr↑ + wgt 정체/감소 + price↑ | 2 |
+| 판정보류(중량결측) | after 중량=0 비율 ≥ 50% | 1 |
+
+#### 사용상 주의
+
+- `w_unit_price` = 총금액 / 총중량 (월별 단가 평균보다 안정적인 가중 단가).
+- `dlr_pct`는 `circumvention_suspects.csv`의 `f2_pct`와 43/43건 정합 확인 완료.
+
+---
+
 ### antidumping_normalized.csv
 
 | 항목 | 내용 |
