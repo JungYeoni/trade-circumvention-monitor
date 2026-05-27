@@ -2,7 +2,7 @@
 
 검증일: 2026-05-27
 
-최신 재리뷰: 2026-05-27 (v6 — 방법론 한계: 대조군 부재와 공급망 재편 대안 설명 추가)
+최신 재리뷰: 2026-05-27 (v8 — 07 탐색 분석 corrected flow 기준 수정 완료)
 
 ## 검토 대상
 
@@ -48,16 +48,16 @@ v4 재리뷰에서 추가 발견된 문제:
 | `07`/`08` flow2 raw-row mean | 월별 합산 후 월평균 방식 확인                                                          | 해결                                     |
 | `08` TWN reporter 매핑       | `TWN -> 490` 수동 매핑 및 TWN flow1 1,000행 확인                                       | 해결                                     |
 | `08` API 키 앞자리 출력      | `API_KEY[:8]`, `새 키 적용` 문자열 검색 결과 없음                                      | 해결                                     |
-| `09` hs_code dedup 누락      | `dedup_keys`에 `hs_code` 추가 → 의심 조합 34건→**43건** (23개 사건, trade_date 수정 후) | 해결                                   |
-| `10` 가격·물량 분해          | trade_date 수정 후 재실행 완료, 43건 / f2_pct≈dlr_pct 43/43 정합                       | 해결                                   |
+| `09` hs_code dedup 누락      | `dedup_keys`에 `hs_code` 추가 → 의심 조합 34건→43건, 이후 08 flow1 수정 후 **41건**     | 해결                                   |
+| `10` 가격·물량 분해          | 08/09 재실행 후 41건 / f2_pct≈dlr_pct 41/41 정합                                      | 해결                                   |
 | `10` 세계 단가 수집          | `World -> World` 응답 0/NaN 문제 확인, 구 노트북 삭제 후 신규 노트북으로 대체           | 해결 (방향 전환)                        |
 | customs `trade_date`         | cache float 변환 + CSV 재생성 완료, 07/09/10 파싱 `%Y-%m`으로 수정                     | 해결                                   |
-| `08` 후보국 선정 기준        | 여전히 기존 `flow == 2` 기준 사용                                                      | 미해결 (우선순위 medium)                 |
-| `07` 분석 기준               | 여전히 기존 `flow` 기준 사용                                                           | 미해결 또는 보정 전 탐색용으로 명시 필요 |
+| `08` 후보국 선정 기준        | `flow_corrected == 2` 기준으로 후보국 재선정, flow1 재수집 완료                       | 해결                                     |
+| `07` 분석 기준               | `flow_corrected` 기준으로 flow0/flow2 탐색 분석 및 시각화 수정, 재실행 완료             | 해결                                     |
 
-주요 이슈(Issue 5.4 trade_date)는 해결되었다. cache float 변환과 CSV 재생성, 07/09/10 파싱 포맷 수정, 재실행 후 f2_pct≈dlr_pct 43/43 정합 확인까지 완료했다. trade_date 수정 결과 의심 사건이 25개 → 23개로 소폭 감소(2개 탈락)했고 suspicion_score도 변동했다.
+주요 이슈(Issue 5.4 trade_date)는 해결되었다. cache float 변환과 CSV 재생성, 07/09/10 파싱 포맷 수정까지 완료했다. 이후 Issue 5.1까지 반영해 08/09/10을 재실행한 최신 v7 기준으로 `f2_pct≈dlr_pct` 41/41 정합을 확인했다.
 
-잔여 이슈는 `08`에서 flow1 수집 후보국을 고를 때 `flow_corrected` 기준을 사용하지 않는다는 점이다(Issue 5.1). 이 때문에 corrected flow2로 편입되는 22개 조합에 flow1 데이터가 없다. 이 22개 조합은 현재 상위 의심 케이스에 포함되지 않아 우선순위는 medium이다.
+`08`의 flow1 후보국 선정 이슈(Issue 5.1)도 해결되었다. 08번에서 `flow_corrected == 2` 기준으로 후보국을 재선정했고, 새로 편입된 후보 조합의 flow1 수집 후 09/10을 재실행했다. 07번 탐색 분석도 같은 `flow_corrected` 기준으로 수정했다. 최신 최종 산출물은 의심 조합 41건, 의심 사건 23개다.
 
 ## 1. `06`: flow0 분류에 다른 사건의 규제국이 섞임
 
@@ -125,7 +125,7 @@ flow0의 정의는 "해당 규제 사건의 규제국 -> 한국"이다. 따라�
 
 `09_triangular_trade_analysis.ipynb`에는 source-level 규제국 집합 기준 `flow_corrected`가 도입되었다. 재검산 결과 corrected flow0에는 다른 사건의 규제국이 추가로 섞이는 문제가 없었다.
 
-다만 `08_comtrade_flow1_collection.ipynb`와 `07_flow0_flow2_analysis.ipynb`는 아직 기존 `flow` 컬럼을 사용하는 지점이 남아 있다. 따라서 `09`의 최종 분석 로직만 보정된 상태이며, flow1 수집 후보 생성과 07 탐색 분석은 같은 기준으로 맞춰야 한다.
+`08_comtrade_flow1_collection.ipynb`도 `flow_corrected == 2` 기준으로 후보국을 재선정하도록 수정되었다. `07_flow0_flow2_analysis.ipynb` 역시 flow0/flow2 집계와 시각화에서 `flow_corrected`를 사용하도록 수정되었다.
 
 ## 2. `07`: flow0 월평균 계산이 실제로는 기간 총합
 
@@ -177,7 +177,7 @@ flow0은 다음 순서로 집계해야 한다.
 
 ### 최신 상태
 
-`07_flow0_flow2_analysis.ipynb`의 flow0 집계는 `source_row_id, product_name_kr, trade_date, period_label` 기준 월별 합산 후 월평균 방식으로 수정되었다. 총합을 월평균으로 오인하던 문제는 해결된 것으로 판단한다.
+`07_flow0_flow2_analysis.ipynb`의 flow0 집계는 `source_row_id, product_name_kr, trade_date, period_label` 기준 월별 합산 후 월평균 방식으로 수정되었다. 또한 `flow_corrected == 0` 기준으로 집계하도록 수정되어, 총합 오인과 old flow 기준 문제 모두 해결된 것으로 판단한다.
 
 단, 이 집계는 아직 기존 `flow` 컬럼을 사용한다. 따라서 flow0/flow2 분류 오염 문제까지 해결된 것은 아니다.
 
@@ -238,13 +238,9 @@ flow2는 다음 순서로 집계해야 한다.
 
 `07_flow0_flow2_analysis.ipynb`와 `08_comtrade_flow1_collection.ipynb` 모두 flow2 집계를 월별 합산 후 월평균 방식으로 수정했다. raw row 평균 문제는 해결된 것으로 판단한다.
 
-다만 `08`은 후보국 선정 입력을 만들 때 여전히 다음과 같이 기존 `flow == 2`를 사용한다.
+최신 수정으로 `08`도 `09`와 동일하게 source-level 규제국 집합 기준 `flow_corrected`를 만든 뒤 `flow_corrected == 2` 기준으로 후보군을 선정한다. 따라서 flow2 집계 방식과 후보군 기준 모두 최종 분석 기준과 정합해졌다.
 
-```python
-df_f2 = df_flow2_all[df_flow2_all["flow"] == 2].copy()
-```
-
-따라서 집계 방식은 맞지만, 후보군 자체가 corrected flow2 기준이 아니다.
+`07_flow0_flow2_analysis.ipynb`도 `flow_corrected == 2` 기준으로 flow2 탐색 집계와 `plot_case()` 시각화를 수행하도록 수정되었다.
 
 ## 4. `09`: 최종 삼각무역 분석이 총합 기준이라 의심 케이스가 바뀜
 
@@ -320,8 +316,8 @@ before/after 월 수는 균등하지 않다.
 - flow2 집계: 3,652행
 - flow1 집계: 589행
 - 최종 조합: 3,652건
-- 우회 의심 조합: **43건** (v3 동일)
-- 우회 의심 source_row_id: **23개** (v3: 25개, trade_date 수정으로 2개 탈락)
+- 우회 의심 조합: **41건** (v7, 08 flow1 후보 기준 수정 후)
+- 우회 의심 source_row_id: **23개**
 - 1위: 스테인리스평판압연/VN (suspicion_score 6,382.1, v3: 4,213.5)
 
 월 수 불균형에 따른 총합 비교 문제는 해결된 것으로 판단한다.
@@ -369,7 +365,7 @@ iso3_to_reporter["TWN"] = "490"
 
 TWN 누락 문제는 해결된 것으로 판단한다. 다만 `490`은 `Other Asia, nes` 성격의 코드이므로, 해석 시 대만 단독 통계가 아닐 수 있다는 주석을 유지해야 한다.
 
-## 5.1 최신 잔여 이슈: `08` flow1 후보 선정이 old flow 기준
+## 5.1 ~~잔여 이슈~~ (해결): `08` flow1 후보 선정이 old flow 기준
 
 ### 위치
 
@@ -381,7 +377,7 @@ df_f2 = df_flow2_all[df_flow2_all["flow"] == 2].copy()
 
 ### 확인 결과
 
-`09`에서는 `flow_corrected`를 사용하지만, `08`의 flow1 수집 후보는 여전히 기존 `flow` 기준이다. 최신 산출물을 재검산한 결과:
+수정 전에는 `09`에서는 `flow_corrected`를 사용하지만, `08`의 flow1 수집 후보는 기존 `flow` 기준이었다. 당시 산출물을 재검산한 결과:
 
 - 기존 `flow0`에서 corrected `flow2`로 바뀐 `(source_row_id, intermediary)` 조합: 22개
 - 그 22개 중 flow1 행이 없는 조합: 22개
@@ -427,6 +423,26 @@ df_f2 = df_flow2_all[df_flow2_all["flow"] == 2].copy()
 
 `08`에도 `09`와 동일한 source-level flow 재분류 로직을 넣고, 후보 선정은 `flow_corrected == 2` 기준으로 수행해야 한다. 이후 `comtrade_flow1_raw.csv`와 `circumvention_suspects.csv`를 다시 생성해야 한다.
 
+### 최신 상태
+
+해결 완료.
+
+- `08_comtrade_flow1_collection.ipynb`에 source-level `flow_corrected` 재분류 로직 추가
+- 후보국 선정 기준을 기존 `flow == 2`에서 `flow_corrected == 2`로 변경
+- `trade_date` 파싱도 `YYYY-MM` 기준으로 수정하고, 구형 `YYYY.MM` 입력이 들어오면 중단하도록 방어 로직 추가
+- 저장 셀이 markdown으로 되어 있어 실행되지 않던 문제를 code cell로 수정
+- `comtrade_flow1_raw.csv` 재생성 완료: 18,375행, source_row_id 60개, `(source_row_id, intermediary)` 346개
+- corrected flow2 기준으로 새로 편입된 후보 조합 14개가 모두 flow1 raw에 포함됨
+- 09/10 재실행 완료
+
+최신 산출물:
+
+| 산출물 | 최신 결과 |
+|--------|----------|
+| `circumvention_suspects.csv` | 전체 3,652조합, 의심 41조합, 의심 사건 23개 |
+| `price_volume_decomposition.csv` | 41건 |
+| 09 `f2_pct` vs 10 `dlr_pct` | 41/41건 완전 일치 |
+
 ## 5.2 ~~잔여 이슈~~ (해결): `10` 세계 평균 단가 수집 — 방향 전환 완료
 
 ### 원래 문제
@@ -443,26 +459,26 @@ df_f2 = df_flow2_all[df_flow2_all["flow"] == 2].copy()
 
 - 구 `10_comtrade_world_price_collection.ipynb` 삭제 완료
 - 신규 `10_price_volume_decomposition.ipynb` 생성 및 실행 완료
-- 산출물: `data/interim/price_volume_decomposition.csv` (43건)
+- 산출물: `data/interim/price_volume_decomposition.csv` (41건, 08 flow1 후보국 수정 후 최신 기준)
 
 신규 노트북 10의 분석 방법:
-- `circumvention_suspects.csv`의 `is_suspect=True` 43개 조합을 `customs_flow0_flow2_raw.csv`에 조인
+- `circumvention_suspects.csv`의 `is_suspect=True` 41개 조합을 `customs_flow0_flow2_raw.csv`에 조인
 - (source_row_id, country_iso2) 기준 월별 합산 후 단가 = `imp_dlr / imp_wgt`
 - before/after 기간 금액·중량·단가 변화 계산
 - 유형 분류: 물량증가형 / 혼합형 / 가격상승형 / 신규유입형 / 기타 / 판정보류 / 해당없음
 
-결과 요약 (43건, trade_date 수정 후 v4 기준):
+결과 요약 (41건, 08 flow1 후보국 수정 후 v7 기준):
 
 | 유형 | 건수 |
 |------|------|
-| 물량증가형 | 27 |
+| 물량증가형 | 24 |
 | 신규유입형 | 5 |
 | 혼합형 | 4 |
-| 기타 | 4 |
+| 기타 | 5 |
 | 가격상승형 | 2 |
 | 판정보류(중량결측) | 1 |
 
-물량증가형 27건(63%)으로 가격 상승만으로 설명되지 않는 금액 증가 후보가 다수 확인되었다. 다만 이는 우회 확정이나 통계적 유의성의 근거가 아니라, 추가 검토 우선순위를 정하는 보조 지표로 해석해야 한다. `f2_pct ≈ dlr_pct` 43/43 정합 확인 완료.
+물량증가형 24건으로 가격 상승만으로 설명되지 않는 금액 증가 후보가 다수 확인되었다. 다만 이는 우회 확정이나 통계적 유의성의 근거가 아니라, 추가 검토 우선순위를 정하는 보조 지표로 해석해야 한다. `f2_pct ≈ dlr_pct` 41/41 정합 확인 완료.
 
 세계 단가 수집 문제 자체는 방향 전환으로 해결된 것으로 판단한다. 가격·물량 분해 산출값의 신뢰성은 Issue 5.4 수정 후 재검증해야 한다.
 
@@ -522,8 +538,9 @@ dedup_keys = [
 | v2 (월평균) | 34건 | 23개 | Issue 3·4 수정 |
 | v3 (hs_code dedup) | **43건** | **25개** | Issue 5.3 수정 |
 | v4 (trade_date 수정) | **43건** | **23개** | Issue 5.4 수정 (2개 사건 탈락, 점수 변동) |
+| v7 (08 flow1 후보 수정) | **41건** | **23개** | Issue 5.1 수정 (flow1 후보 기준 정합화) |
 
-v4 기준 1위: 스테인리스평판압연/VN (suspicion_score 6,382.1)
+v7 기준 1위: 스테인리스평판압연/VN (suspicion_score 6,382.1)
 
 해결된 것으로 판단한다.
 
@@ -617,7 +634,7 @@ trade_date = f"{raw_date[:4]}-{raw_date[4:]}" if len(raw_date) == 6 else raw_dat
 1. 84개 parquet cache 파일의 `trade_date`(float64)를 `YYYY-MM` 문자열로 일괄 변환 (`2020.1` → `"2020-10"` 등, float 산술 역산으로 정확히 복원 가능)
 2. `customs_flow0_flow2_raw.csv` 재생성 (141,907행, 10월 11,354행 복원)
 3. notebooks 07/09/10의 파싱 코드를 `format="%Y.%m"` → `format="%Y-%m"`으로 수정
-4. notebook 09 재실행 → `circumvention_suspects.csv` 재생성 (43건 / 23개 사건)
+4. notebook 09 재실행 → `circumvention_suspects.csv` 재생성 (v4: 43건 / 23개 사건)
 5. notebook 10 재실행 → `price_volume_decomposition.csv` 재생성
 
 **검증 결과:**
@@ -625,7 +642,7 @@ trade_date = f"{raw_date[:4]}-{raw_date[4:]}" if len(raw_date) == 6 else raw_dat
 - `trade_date` dtype: object (문자열 `YYYY-MM`)
 - `YYYY.1` 형태: 0건
 - `YYYY-10` (10월) 형태: 11,354건
-- `09 f2_pct` vs `10 dlr_pct`: 43/43건 허용오차(1%) 내 일치
+- `09 f2_pct` vs `10 dlr_pct`: v4 기준 43/43건 허용오차(1%) 내 일치
 
 **영향 (trade_date 수정 전후 비교):**
 
@@ -637,6 +654,8 @@ trade_date = f"{raw_date[:4]}-{raw_date[4:]}" if len(raw_date) == 6 else raw_dat
 | f2_pct / dlr_pct 정합 | 33/43 | 43/43 |
 
 해결된 것으로 판단한다.
+
+이후 Issue 5.1까지 해결한 최신 v7 기준에서는 의심 조합 41건, 의심 사건 23개이며 `09 f2_pct`와 `10 dlr_pct`는 41/41건 완전 일치한다.
 
 ## 6. 이론 및 방법론상 보완 사항
 
@@ -685,7 +704,7 @@ before/after 방향성 비교에서는 이 차이가 완전히 치명적이지�
 
 ### 6.6 대조군 부재와 통계적 유의성 미검증
 
-현재 43개 의심 조합은 전체 3,652개 `(source_row_id × intermediary)` 조합 중 약 1.2%다. 그러나 이 비율이 높은지 낮은지는 현재 설계만으로 판단할 수 없다.
+현재 41개 의심 조합은 전체 3,652개 `(source_row_id × intermediary)` 조합 중 약 1.1%다. 그러나 이 비율이 높은지 낮은지는 현재 설계만으로 판단할 수 없다.
 
 핵심 이유는 대조군이 없기 때문이다. 반덤핑 규제와 무관한 유사 품목·유사 국가 조합에서도 `f0 감소 + f1 증가 + f2 증가` 패턴이 우연히 비슷한 빈도로 발생한다면, 현재 의심 조합 수는 규제 효과의 특이 신호라고 보기 어렵다.
 
@@ -740,21 +759,17 @@ before/after 방향성 비교에서는 이 차이가 완전히 치명적이지�
 | `09` flow 재분류 | `flow_corrected` 도입 완료 |
 | `07`/`08` flow2 집계 | 월별 합산 후 월평균 방식으로 수정 완료 |
 | `07` flow0 집계 | trade_date 포함 월별 집계 후 평균 수정 완료 |
+| `07` flow 기준 | flow0/flow2 집계와 시각화를 `flow_corrected` 기준으로 수정 및 재실행 완료 |
 | `08` TWN 매핑 | `TWN → 490` 수동 매핑, flow1 1,000행 수집 완료 |
-| `09` hs_code dedup | `hs_code` 추가 → 세부코드 보존, 43건/23개 사건 재산정 완료 (trade_date 수정 후) |
+| `09` hs_code dedup | `hs_code` 추가 → 세부코드 보존, v3 기준 43건/25개 사건 재산정 완료 |
+| `08` flow1 후보 기준 | `flow_corrected == 2` 기준 후보국 재선정, flow1 재수집, 09/10 재실행 완료 |
 | `10` 방향 전환 | World→World 단가 수집 포기, 가격·물량 분해 노트북으로 대체 완료 |
 | `10` 신규유입형 분류 | before 기저 없는 케이스를 별도 유형으로 분리 완료 |
 | customs `trade_date` | cache float 변환 + CSV 재생성 + 07/09/10 파싱 수정 + 재실행 완료 |
 
-### 남은 항목 (우선순위순)
+### 남은 항목
 
-1. **(medium)** `08`에서 `flow_corrected == 2` 기준으로 flow1 후보국을 재선정한다.
-   - 영향: 22개 조합 flow1 누락 → false negative 가능성
-   - 현재 상위 의심 케이스에는 미포함 → 즉각 critical하지 않음
-   - 수행 시 `comtrade_flow1_raw.csv` → `circumvention_suspects.csv` → `price_volume_decomposition.csv` 순 재실행 필요
+실질적인 구현 잔여 이슈는 없다. 아래 항목은 문서 관리 성격이다.
 
-2. **(low)** `07` 탐색 분석에 old `flow` 기준임을 노트북 상단에 명시한다.
-   - `flow_corrected` 기준으로 업데이트하거나, "보정 전 탐색용" 주석 추가
-
-3. **(low)** 최종 의심 케이스 버전별 이력을 Issue 5.3 섹션 표에서 확인한다.
-   - v1 (총합): 37건 / v2 (월평균): 34건/23개 / v3 (hs_code dedup): 43건/25개 / v4 (trade_date): 43건/23개
+1. **(low)** 최종 의심 케이스 버전별 이력을 Issue 5.3 섹션 표에서 확인한다.
+   - v1 (총합): 37건 / v2 (월평균): 34건/23개 / v3 (hs_code dedup): 43건/25개 / v4 (trade_date): 43건/23개 / v7 (08 flow1 후보 수정): 41건/23개
