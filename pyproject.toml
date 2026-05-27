@@ -30,6 +30,7 @@ dependencies = [
     # 설정
     "pyyaml>=6.0",
     "python-dotenv>=1.0",
+    "pycountry>=26.2.16",
 ]
 
 [project.optional-dependencies]
