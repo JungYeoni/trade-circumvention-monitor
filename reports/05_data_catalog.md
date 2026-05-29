@@ -238,18 +238,19 @@
 
 #### 주요 집계
 
-- is_suspect=True: **43건** / 고유 사건: **23개**
-- 1위: 스테인리스평판압연/VN (6,382.1점)
-- suspicion_score = f2_pct + f1_pct (음수 클리핑, 절대 금액 미반영)
+- is_suspect=True: **41건** / 고유 사건: **23개** / 고유 중간국: 20개
+- 1위: 스테인리스평판압연/VN (suspicion_score 6,382.1)
+- suspicion_score 범위: 10.4 ~ 6,382.1
+- suspicion_score = f2_pct.clip(0) + f1_pct.clip(0) (음수 클리핑, 절대 금액 미반영)
 
 #### 버전 이력
 
 | 버전 | is_suspect 수 | 고유 사건 | 주요 변경 |
 |------|------------:|--------:|----------|
 | v1 (총합 기준) | 37 | — | 최초 |
-| v2 (월평균) | 34 | 23개 | Issue 3·4 수정 |
-| v3 (hs_code dedup) | **43** | 25개 | Issue 5.3 수정 |
-| v4 (trade_date 수정) | **43** | **23개** | Issue 5.4 수정 |
+| v2 (월평균) | 34 | 23개 | 총합→월평균 수정 |
+| v3 (hs_code dedup) | 43 | 25개 | dedup 키 추가 |
+| v4 (trade_date 수정) | **41** | **23개** | 10월 데이터 복원 후 재실행 |
 
 ---
 
@@ -259,7 +260,7 @@
 |------|------|
 | 생성 노트북 | `notebooks/10_price_volume_decomposition.ipynb` |
 | 원천 | `circumvention_suspects.csv`, `customs_flow0_flow2_raw.csv` |
-| 행 수 | 43 |
+| 행 수 | 41 |
 | 컬럼 수 | 17 |
 | 성격 | 우회 의심 케이스의 금액 증가를 물량 효과·가격 효과로 분해 |
 
